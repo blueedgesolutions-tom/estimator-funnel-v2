@@ -1,0 +1,300 @@
+{
+  "aquapoolsnc": {
+    "version": "1",
+    "config": {
+      "brand_name": "Aqua Pools & Outdoor Living",
+      "company_name": "Aqua Pools and Plunge LLC",
+      "city": "Charlotte",
+      "area": "Charlotte, North Carolina",
+      "contact_phone": "(704) 957-2246",
+      "contact_email": "",
+      "logo_url": "https://swydsxqfm7fcezw3.public.blob.vercel-storage.com/tenant-branding/aqua-pools-logo.png",
+      "logo_height": 60,
+      "privacy_policy_url": "/privacy",
+      "ghl_webhook_url": "https://services.leadconnectorhq.com/hooks/DuPlDVzPZ1BPDmyDK1Mk/webhook-trigger/V4bZG60Nn9KedVS5Wq1M",
+      "ghl_booking_webhook_url": "https://services.leadconnectorhq.com/hooks/DuPlDVzPZ1BPDmyDK1Mk/webhook-trigger/pAgiqXQWD7MimPTth2sk",
+      "fb_pixel_id": "1336791680903487",
+      "theme": { "primary": "#00afef" },
+      "testimonials": [
+        {
+          "quote": "Robert was fantastic to work with. Transparent and competitive pricing, reasonable time line and a wonderful finished product! Would highly recommend for your pool building needs.",
+          "author": "Neville H.",
+          "location": "Charlotte, NC",
+          "rating": 5
+        },
+        {
+          "quote": "Robert and his team have been easy to work with and any change or addition we add, they are on it. I know that if I pick up the phone and reach out to Robert, he is available and responsive.",
+          "author": "Pamela B.",
+          "location": "Huntersville, NC",
+          "rating": 5
+        },
+        {
+          "quote": "Robert was great throughout the entire process. The only thing better was the finished product! Fair pricing and incredible work from the pool, to the patio to the landscaping.",
+          "author": "Christian G.",
+          "location": "Charlotte, NC",
+          "rating": 5
+        }
+      ]
+    },
+    "catalog": {
+      "poolModels": [],
+      "equipmentOptions": [],
+      "deckingOptions": []
+    },
+    "estimate": {
+      "serviceArea": {
+        "enabled": false,
+        "lat": 35.2271,
+        "lng": -80.8431,
+        "radiusMiles": 50,
+        "warningMessage": "We may not serve your area — but reach out and we'll let you know!",
+        "strictMode": false
+      },
+      "bookingEnabled": true,
+      "bookingSkipEnabled": true,
+      "consultationDaysAhead": 21,
+      "financingApr": 8.99,
+      "financingTermYears": 10
+    }
+  },
+
+  "stallionpoolstx": {
+    "version": "1",
+    "config": {
+      "brand_name": "Stallion Pools and Landscape",
+      "company_name": "Stallion Pools and Landscape",
+      "city": "Austin",
+      "area": "Austin Metro, Texas",
+      "contact_phone": "(512) 876-3765",
+      "contact_email": "",
+      "logo_url": "https://swydsxqfm7fcezw3.public.blob.vercel-storage.com/tenant-branding/stallion-logo.png",
+      "logo_height": 60,
+      "privacy_policy_url": "/privacy",
+      "ghl_webhook_url": "https://services.leadconnectorhq.com/hooks/MshLFhMdP1ml5uqxxKNv/webhook-trigger/MDfR5TbjYxp5ULrOgnZE",
+      "ghl_booking_webhook_url": "https://services.leadconnectorhq.com/hooks/MshLFhMdP1ml5uqxxKNv/webhook-trigger/a7nJOb7vOVw5yFGfEivH",
+      "fb_pixel_id": "1044923627434646",
+      "theme": { "primary": "#18aded" },
+      "testimonials": [
+        {
+          "quote": "We've had an amazing experience with Matt and Stallion Pools & Landscape! From start to finish, Matt has been great to work with. His knowledge, expertise, and communication is top notch.",
+          "author": "Tracy J.",
+          "location": "Leander, TX",
+          "rating": 5
+        },
+        {
+          "quote": "One of the best experiences I've had with a contractor. Matt was incredibly customer focused. He was very responsive, answered questions and resolved issues quickly and effectively. The speed at which they completed our project along with the quality of their work is really impressive.",
+          "author": "Brian B.",
+          "location": "Liberty Hill, TX",
+          "rating": 5
+        },
+        {
+          "quote": "This was the best experience building our pool. The build was less than 6 weeks and the attention to detail was amazing and met all of our expectations. Highly recommend Stallion Pools and Landscape for your project!",
+          "author": "Christopher Lewis",
+          "location": "Bertram, TX",
+          "rating": 5
+        }
+      ]
+    },
+    "catalog": {
+      "poolModels": [],
+      "equipmentOptions": [],
+      "deckingOptions": []
+    },
+    "estimate": {
+      "serviceArea": {
+        "enabled": false,
+        "lat": 30.2672,
+        "lng": -97.7431,
+        "radiusMiles": 50,
+        "warningMessage": "We may not serve your area — but reach out and we'll let you know!",
+        "strictMode": false
+      },
+      "bookingEnabled": true,
+      "bookingSkipEnabled": true,
+      "consultationDaysAhead": 21,
+      "financingApr": 8.99,
+      "financingTermYears": 10
+    }
+  },
+
+  "jpiercetx": {
+    "version": "1",
+    "config": {
+      "brand_name": "Pools by J. Pierce",
+      "company_name": "Pools by J Pierce LLC",
+      "city": "Waco",
+      "area": "Waco, Texas",
+      "contact_phone": "(972) 670-7468",
+      "contact_email": "",
+      "logo_url": "https://swydsxqfm7fcezw3.public.blob.vercel-storage.com/tenant-branding/j-pierce-logo.png",
+      "logo_height": 96,
+      "privacy_policy_url": "/privacy",
+      "ghl_webhook_url": "https://services.leadconnectorhq.com/hooks/nuLucE8SDKJ1dYKOxJg6/webhook-trigger/0DUyo8CAZTL6cpfllk2p",
+      "ghl_booking_webhook_url": "https://services.leadconnectorhq.com/hooks/nuLucE8SDKJ1dYKOxJg6/webhook-trigger/46eYYtDAUgpulle3pPyP",
+      "fb_pixel_id": "3844873879120583",
+      "theme": { "primary": "#1a3c5e", "accent": "#c4a265" },
+      "testimonials": [
+        {
+          "quote": "By fall 2022 we were ready to build a backyard pool for our family of 5. Jim stayed in constant communication, visited nearly daily to check progress, and the project was completed just in time for swimming season. We have nothing but wonderful things to say about him personally and professionally.",
+          "author": "Westerfield Family",
+          "location": "Waco, TX",
+          "rating": 5
+        },
+        {
+          "quote": "Jim built a fantastic pool for us in spring and summer 2023. He worked closely with us to design it with the features we wanted within our budget, and then built it to those exact specifications. Communication was great throughout every step, before and after completion.",
+          "author": "Mike & Jill L.",
+          "location": "Moody, TX",
+          "rating": 5
+        },
+        {
+          "quote": "We moved to Waco in early 2024 and were told building should take 6 to 8 weeks. Jim delivered exactly that timeline, kept us informed throughout, and was on-site for each major phase. I have recommended Pools by J. Pierce to everyone who has asked.",
+          "author": "Gary M.",
+          "location": "McGregor, TX",
+          "rating": 5
+        }
+      ]
+    },
+    "catalog": {
+      "poolModels": [],
+      "equipmentOptions": [],
+      "deckingOptions": []
+    },
+    "estimate": {
+      "serviceArea": {
+        "enabled": false,
+        "lat": 31.5493,
+        "lng": -97.1467,
+        "radiusMiles": 50,
+        "warningMessage": "We may not serve your area — but reach out and we'll let you know!",
+        "strictMode": false
+      },
+      "bookingEnabled": true,
+      "bookingSkipEnabled": true,
+      "consultationDaysAhead": 21,
+      "financingApr": 8.99,
+      "financingTermYears": 10
+    }
+  },
+
+  "flcustompools": {
+    "version": "1",
+    "config": {
+      "brand_name": "Florida Custom Pools and Spas",
+      "company_name": "Florida Custom Pools and Spas LLC",
+      "city": "Melbourne",
+      "area": "Florida's Space Coast",
+      "contact_phone": "(561) 797-5163",
+      "contact_email": "",
+      "logo_url": "https://swydsxqfm7fcezw3.public.blob.vercel-storage.com/tenant-branding/flcp-logo.webp",
+      "logo_height": 144,
+      "privacy_policy_url": "/privacy",
+      "ghl_webhook_url": "https://services.leadconnectorhq.com/hooks/oB3UTjaNt3YED62kBSaw/webhook-trigger/xC5ykWK1Zoovc4I28Wkc",
+      "ghl_booking_webhook_url": "https://services.leadconnectorhq.com/hooks/oB3UTjaNt3YED62kBSaw/webhook-trigger/JlPf6ThXgWbYFQWOnZJu",
+      "fb_pixel_id": "1444400980198757",
+      "theme": { "primary": "#ef7224" },
+      "testimonials": [
+        {
+          "quote": "What can I say about Dan and Shane! They are two of the most hard-working, professional, and genuine people I've ever had the pleasure of working with. From start to finish with our new pool, they were both there and making sure things were getting done to how we wanted.",
+          "author": "Nicholas L.",
+          "location": "Satellite Beach, FL",
+          "rating": 5
+        },
+        {
+          "quote": "Florida Custom Pools is an amazing company to use for your custom pool design and build. Both Dan and Shane were extremely responsive during every step in this process. They both are very detailed and thorough and they take extreme pride in their work.",
+          "author": "Jennifer L.",
+          "location": "Melbourne Beach, FL",
+          "rating": 5
+        },
+        {
+          "quote": "Dan and Florida Custom Pools did an amazing job to finish my pool on time. He was very involved in the whole process and always available to answer questions or come on site whenever needed.",
+          "author": "Sunanda M.",
+          "location": "Palm Bay, FL",
+          "rating": 5
+        }
+      ]
+    },
+    "catalog": {
+      "poolModels": [],
+      "equipmentOptions": [],
+      "deckingOptions": []
+    },
+    "estimate": {
+      "serviceArea": {
+        "enabled": false,
+        "lat": 28.0836,
+        "lng": -80.6081,
+        "radiusMiles": 50,
+        "warningMessage": "We may not serve your area — but reach out and we'll let you know!",
+        "strictMode": false
+      },
+      "bookingEnabled": true,
+      "bookingSkipEnabled": true,
+      "consultationDaysAhead": 21,
+      "financingApr": 8.99,
+      "financingTermYears": 10
+    }
+  },
+
+  "aquadreamsfl": {
+    "version": "1",
+    "config": {
+      "brand_name": "Aqua Dreams",
+      "company_name": "Aqua Dreams Pool & Outdoor INC",
+      "city": "Tampa",
+      "area": "Tampa Bay, Florida",
+      "contact_phone": "(813) 771-7665",
+      "contact_email": "",
+      "logo_url": "https://swydsxqfm7fcezw3.public.blob.vercel-storage.com/tenant-branding/aqua-dreams-logo.webp",
+      "logo_height": 60,
+      "privacy_policy_url": "/privacy",
+      "ghl_webhook_url": "https://services.leadconnectorhq.com/hooks/fXwAKqfITWFumC1a3cvj/webhook-trigger/bdace68a-0520-4ceb-a830-8e68d2874942",
+      "ghl_booking_webhook_url": "https://services.leadconnectorhq.com/hooks/fXwAKqfITWFumC1a3cvj/webhook-trigger/a438e622-c843-4bb7-92c9-2da2534897d0",
+      "fb_pixel_id": "1488538549328214",
+      "theme": { "primary": "#185480" },
+      "testimonials": [
+        {
+          "quote": "They listened to exactly what we wanted, which was pretty specific, and made really helpful suggestions when we sat down with them that furthered our vision. They did not force us to do what they wanted or what is popular, but instead listened to our wants and made it happen.",
+          "author": "Rebecca D.",
+          "location": "Winter Haven, FL",
+          "rating": 5
+        },
+        {
+          "quote": "I was expecting a sales pitch. Instead they spent two hours at the showroom helping us figure out exactly what we wanted. Best decision we made.",
+          "author": "Sandra R.",
+          "location": "Tampa, FL",
+          "rating": 5
+        },
+        {
+          "quote": "The 3D designs blew us away. We knew exactly what we were getting before a single dollar was spent.",
+          "author": "James & Lisa K.",
+          "location": "Sarasota, FL",
+          "rating": 5
+        }
+      ]
+    },
+    "catalog": {
+      "poolModels": [],
+      "equipmentOptions": [],
+      "deckingOptions": []
+    },
+    "estimate": {
+      "serviceArea": {
+        "enabled": false,
+        "lat": 27.9506,
+        "lng": -82.4572,
+        "radiusMiles": 50,
+        "warningMessage": "We may not serve your area — but reach out and we'll let you know!",
+        "strictMode": false
+      },
+      "bookingEnabled": true,
+      "bookingSkipEnabled": true,
+      "consultationDaysAhead": 21,
+      "financingApr": 8.99,
+      "financingTermYears": 10
+    },
+    "copy": {
+      "booking.headline": "Start Your Project at Our Apollo Beach Showroom",
+      "booking.subheadline": "Come in for coffee or a glass of wine and spend an hour with our senior designer. Touch and compare real material samples, get straight answers on feasibility and budget, and see your options come to life on our 3D rendering suite. You leave with a design and a quote you can act on. No obligation."
+    }
+  }
+}
