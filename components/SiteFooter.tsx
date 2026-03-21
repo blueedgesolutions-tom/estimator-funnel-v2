@@ -21,8 +21,8 @@ export default function SiteFooter({ logoUrl, companyName, privacyPolicyUrl, sta
           <Image
             src={logoUrl}
             alt={companyName}
-            height={36}
-            width={180}
+            height={300}
+            width={600}
             className="site-footer-logo-img"
             style={{ height: 'var(--logo-height)', width: 'auto' }}
           />

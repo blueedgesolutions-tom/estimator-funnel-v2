@@ -19,8 +19,8 @@ export default function SiteHeader({
           <Image
             src={logoUrl}
             alt={brandName}
-            height={36}
-            width={180}
+            height={300}
+            width={600}
             className="site-header-logo-img"
             style={{ height: 'var(--logo-height)', width: 'auto' }}
           />
