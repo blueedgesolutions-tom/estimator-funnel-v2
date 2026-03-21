@@ -22,3 +22,7 @@ npm-debug.log*
 
 # Vercel
 .vercel
+
+# Sensitive data — tenant configs, keys, internal reference files
+data/
+scripts/test-email.ts
