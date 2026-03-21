@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTenant } from '@/lib/tenant';
 import type { SubmitLeadPayload } from '@/lib/types';
 import { buildEstimateEmailHtml } from '@/lib/email';
+import { logSubmission } from '@/lib/submission-log';
 
 // ─────────────────────────────────────────────────────────
 // Lead submission
@@ -124,6 +125,11 @@ export async function POST(req: NextRequest) {
       // Non-fatal — don't fail the request over email
     }
   }
+
+  // ── 3. Blob backup ──
+  logSubmission(payload.tenantId, funnelData).catch((err) => {
+    console.error('[submit-lead] Blob log error:', err);
+  });
 
   // We consider the submission successful even if secondary services had issues.
   // The lead is stored in localStorage on the client regardless.

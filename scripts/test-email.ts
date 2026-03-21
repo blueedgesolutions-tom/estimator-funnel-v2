@@ -56,7 +56,7 @@ const funnelData: FunnelData = {
 
 const html = buildEstimateEmailHtml({ funnelData, tenant });
 
-const resend = new Resend('re_TbBxxvY4_CK5PqHXJiYoSu9efq4kNXN7i');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 resend.emails.send({
   from: 'AquaDreams <noreply@pooldesignrequest.com>',
