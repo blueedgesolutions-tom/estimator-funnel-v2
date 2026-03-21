@@ -76,8 +76,8 @@ export default async function RootLayout({
             {children}
           </FunnelProvider>
           <ConditionalFooter
+            logoUrl={tenant.config.logo_url}
             companyName={tenant.config.company_name}
-            phone={tenant.config.contact_phone}
             privacyPolicyUrl={tenant.config.privacy_policy_url}
             stateLicense={tenant.config.state_license}
           />

@@ -4,8 +4,8 @@ import { usePathname } from 'next/navigation';
 import SiteFooter from './SiteFooter';
 
 interface Props {
+  logoUrl: string;
   companyName: string;
-  phone: string;
   privacyPolicyUrl: string;
   stateLicense?: string;
 }

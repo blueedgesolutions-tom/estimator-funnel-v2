@@ -1,6 +1,8 @@
+import Image from 'next/image';
+
 interface Props {
+  logoUrl: string;
   companyName: string;
-  phone: string;
   privacyPolicyUrl: string;
   stateLicense?: string;
 }
@@ -9,35 +11,32 @@ function Dot() {
   return <span className="site-footer-dot">·</span>;
 }
 
-export default function SiteFooter({ companyName, phone, privacyPolicyUrl, stateLicense }: Props) {
+export default function SiteFooter({ logoUrl, companyName, privacyPolicyUrl, stateLicense }: Props) {
   const year = new Date().getFullYear();
-
-  if (stateLicense) {
-    return (
-      <footer className="site-footer">
-        <div className="site-footer-row">
-          <span>{companyName}</span>
-          <Dot />
-          <a href={`tel:${phone.replace(/\D/g, '')}`}>{phone}</a>
-          <Dot />
-          <span>License #{stateLicense}</span>
-        </div>
-        <div className="site-footer-row site-footer-row--sub">
-          <a href={privacyPolicyUrl}>Privacy Policy</a>
-          <Dot />
-          <span>© {year} {companyName}</span>
-        </div>
-      </footer>
-    );
-  }
 
   return (
     <footer className="site-footer">
+      <div className="site-footer-logo">
+        {logoUrl ? (
+          <Image
+            src={logoUrl}
+            alt={companyName}
+            height={36}
+            width={180}
+            className="site-footer-logo-img"
+            style={{ height: 'var(--logo-height)', width: 'auto' }}
+          />
+        ) : (
+          <span className="site-footer-logo-text">{companyName}</span>
+        )}
+      </div>
       <div className="site-footer-row">
-        <span>{companyName}</span>
-        <Dot />
-        <a href={`tel:${phone.replace(/\D/g, '')}`}>{phone}</a>
-        <Dot />
+        {stateLicense && (
+          <>
+            <span>License #{stateLicense}</span>
+            <Dot />
+          </>
+        )}
         <a href={privacyPolicyUrl}>Privacy Policy</a>
         <Dot />
         <span>© {year} {companyName}</span>
