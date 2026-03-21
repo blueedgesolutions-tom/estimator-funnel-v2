@@ -28,6 +28,7 @@ export const DEFAULT_TENANT: TenantConfig = {
     privacy_policy_url: '/privacy',
     ghl_webhook_url: '',
     financing_url: 'https://example.com/apply',
+    state_license: 'LIC-0000000',
     theme: {
       primary: '#1B6CA8',
     },

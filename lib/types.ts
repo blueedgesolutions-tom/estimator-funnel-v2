@@ -144,6 +144,7 @@ export interface TenantConfigData {
   area?: string;              // Broader region descriptor: "Central Texas"
   resend_from?: string;       // "AquaDreams <hello@aquadreams.com>"
   financing_url?: string;     // Pre-approval / financing partner referral link
+  state_license?: string;     // State contractor license number (required for display in some states)
   theme: TenantTheme;
   testimonials?: Testimonial[];
   faqs?: FaqItem[];

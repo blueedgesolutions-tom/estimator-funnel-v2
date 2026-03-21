@@ -3,6 +3,7 @@ import { getTenant, getTenantId } from '@/lib/tenant';
 import { resolveTheme, buildBrandStyles } from '@/lib/theme';
 import FunnelProvider from '@/components/FunnelProvider';
 import ConditionalHeader from '@/components/ConditionalHeader';
+import ConditionalFooter from '@/components/ConditionalFooter';
 import './globals.css';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,6 +75,12 @@ export default async function RootLayout({
           >
             {children}
           </FunnelProvider>
+          <ConditionalFooter
+            companyName={tenant.config.company_name}
+            phone={tenant.config.contact_phone}
+            privacyPolicyUrl={tenant.config.privacy_policy_url}
+            stateLicense={tenant.config.state_license}
+          />
         </div>
       </body>
     </html>

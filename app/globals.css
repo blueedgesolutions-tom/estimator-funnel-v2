@@ -2102,6 +2102,46 @@ img {
 }
 
 /* ─────────────────────────────────────────────────────────
+   SITE FOOTER
+   ───────────────────────────────────────────────────────── */
+
+.site-footer {
+  text-align: center;
+  padding: var(--space-xl);
+  background: var(--canvas-white);
+}
+
+.site-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.site-footer-row a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.site-footer-row a:hover {
+  color: var(--text-secondary);
+}
+
+.site-footer-row--sub {
+  margin-top: 4px;
+  font-size: var(--text-xs);
+}
+
+.site-footer-dot {
+  color: var(--canvas-border);
+  user-select: none;
+}
+
+/* ─────────────────────────────────────────────────────────
    INTAKE FORM
    ───────────────────────────────────────────────────────── */
 
