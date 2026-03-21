@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTenant } from '@/lib/tenant';
+import { getTenant, getTenantId } from '@/lib/tenant';
 import type { SubmitLeadPayload } from '@/lib/types';
 import { buildEstimateEmailHtml } from '@/lib/email';
 import { logSubmission } from '@/lib/submission-log';
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Get the tenant config server-side via the request headers
-  const tenant = await getTenant();
+  const [tenant, tenantId] = await Promise.all([getTenant(), getTenantId()]);
   const { ghl_webhook_url, ghl_booking_webhook_url, contact_email, brand_name, resend_from } =
     tenant.config;
 
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
   // ── 2. Confirmation email via Resend ──
   const resendKey = process.env.RESEND_API_KEY;
-  const fromAddress = resend_from ?? `${brand_name} <noreply@${contact_email.split('@')[1]}>`;
+  const fromAddress = resend_from ?? `${brand_name} <${tenantId}@pooldesignrequest.com>`;
 
   if (resendKey && contact_email) {
     try {

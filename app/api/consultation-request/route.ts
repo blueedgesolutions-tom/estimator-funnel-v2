@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTenant } from '@/lib/tenant';
+import { getTenant, getTenantId } from '@/lib/tenant';
 import { formatCurrency } from '@/lib/pricing';
 import type { ConsultationRequestPayload } from '@/lib/types';
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
-  const tenant = await getTenant();
+  const [tenant, tenantId] = await Promise.all([getTenant(), getTenantId()]);
   const { ghl_booking_webhook_url, ghl_webhook_url, contact_email, brand_name, resend_from } =
     tenant.config;
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     try {
       const { Resend } = await import('resend');
       const resend = new Resend(resendKey);
-      const fromAddress = resend_from ?? `${brand_name} <noreply@${contact_email.split('@')[1]}>`;
+      const fromAddress = resend_from ?? `${brand_name} <${tenantId}@pooldesignrequest.com>`;
 
       await resend.emails.send({
         from: fromAddress,
