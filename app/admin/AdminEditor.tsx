@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Check, Copy, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, Copy, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { resolveTheme } from '@/lib/theme';
 import { DEFAULT_COPY_TEMPLATES } from '@/lib/copy';
 import type { TenantConfig, RawTenantConfig, TenantCopy } from '@/lib/types';
@@ -195,6 +195,69 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
       tenant.catalog.deckingOptions.map((d) => [d.id, String(d.pricePerSqft)])
     )
   );
+
+  // ── Intake import ──
+  const [importStatus, setImportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [importMeta, setImportMeta] = useState<{ brandName: string; submittedAt: string } | null>(null);
+
+  async function handleImportIntake() {
+    setImportStatus('loading');
+    try {
+      const res = await fetch('/api/intake-import');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message ?? 'Import failed');
+      }
+      const data = await res.json();
+      const { catalog } = data;
+
+      // Apply pool model prices
+      if (catalog.poolModels) {
+        setPoolModelPrices((prev) => {
+          const next = { ...prev };
+          for (const m of catalog.poolModels) {
+            if (m.id in next) next[m.id] = String(m.basePrice);
+          }
+          return next;
+        });
+      }
+
+      // Apply equipment prices and enabled states
+      if (catalog.equipmentOptions) {
+        setOptionPrices((prev) => {
+          const next = { ...prev };
+          for (const o of catalog.equipmentOptions) {
+            if (o.id in next) next[o.id] = String(o.price);
+          }
+          return next;
+        });
+        setOptionEnabled((prev) => {
+          const next = { ...prev };
+          for (const o of catalog.equipmentOptions) {
+            if (o.id in next) next[o.id] = o.enabled !== false;
+          }
+          return next;
+        });
+      }
+
+      // Apply decking prices
+      if (catalog.deckingOptions) {
+        setDeckingPrices((prev) => {
+          const next = { ...prev };
+          for (const d of catalog.deckingOptions) {
+            if (d.id in next) next[d.id] = String(d.pricePerSqft);
+          }
+          return next;
+        });
+      }
+
+      setImportMeta({ brandName: data.brandName, submittedAt: data.submittedAt });
+      setImportStatus('success');
+    } catch (err) {
+      console.error('[admin] Intake import error:', err);
+      setImportStatus('error');
+    }
+  }
 
   // ── Copy / validation / clipboard ──
   const [copied, setCopied] = useState(false);
@@ -570,9 +633,40 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         {/* Catalog pricing */}
         <CollapsibleCard title="Catalog Pricing" defaultOpen={false}>
           <div style={{ marginTop: 'var(--space-md)' }}>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-lg)' }}>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-md)' }}>
               Update pricing for this tenant. Leave blank to use the global defaults.
             </p>
+
+            {/* Intake import */}
+            <div className="admin-intake-import">
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 2 }}>
+                  Import client intake
+                </div>
+                {importStatus === 'success' && importMeta ? (
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--status-success)' }}>
+                    Imported from {importMeta.brandName} — submitted {new Date(importMeta.submittedAt).toLocaleDateString()}
+                  </div>
+                ) : importStatus === 'error' ? (
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--status-error)' }}>
+                    No intake found for this tenant, or the import failed.
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                    Fills all pricing fields from the client&apos;s submitted intake form.
+                  </div>
+                )}
+              </div>
+              <button
+                className="btn-secondary"
+                onClick={handleImportIntake}
+                disabled={importStatus === 'loading'}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}
+              >
+                <Download size={14} />
+                {importStatus === 'loading' ? 'Importing...' : 'Import intake'}
+              </button>
+            </div>
 
             {/* Pool models */}
             <div style={{ marginBottom: 'var(--space-xl)' }}>
