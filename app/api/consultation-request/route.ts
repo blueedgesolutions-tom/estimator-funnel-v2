@@ -28,12 +28,10 @@ export async function POST(req: NextRequest) {
   }
 
   const [tenant, tenantId] = await Promise.all([getTenant(), getTenantId()]);
-  const { ghl_booking_webhook_url, ghl_webhook_url, contact_email, brand_name, resend_from } =
+  const { ghl_booking_webhook_url, contact_email, brand_name, resend_from } =
     tenant.config;
 
-  const webhookUrl = ghl_booking_webhook_url ?? ghl_webhook_url;
-
-  if (webhookUrl) {
+  if (ghl_booking_webhook_url) {
     const body = {
       full_name:    name,
       phone,
@@ -45,7 +43,7 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-      await fetch(webhookUrl, {
+      await fetch(ghl_booking_webhook_url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

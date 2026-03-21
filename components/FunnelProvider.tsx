@@ -29,6 +29,8 @@ interface FunnelContextValue {
   submitting: boolean;
   submitError: string | null;
   handleSubmit: (finalData: Partial<FunnelData>) => Promise<void>;
+  handleBookingConfirm: (bookingDate: string, bookingTimeSlot: 'morning' | 'afternoon') => Promise<void>;
+  handleBookingSkip: () => void;
   handleOutOfAreaSubmit: (finalData: Partial<FunnelData>) => void;
   handleReset: () => void;
 
@@ -180,6 +182,55 @@ export default function FunnelProvider({
     setSubmitError(null);
   }, []);
 
+  // ── Booking confirmation: fires booking webhook then advances to Results ──
+  const handleBookingConfirm = useCallback(
+    async (bookingDate: string, bookingTimeSlot: 'morning' | 'afternoon') => {
+      const merged: FunnelData = {
+        ...funnelData,
+        bookingDate,
+        bookingTimeSlot,
+        bookingCompleted: true,
+      };
+      setFunnelData(merged);
+      saveToStorage(merged);
+
+      try {
+        await fetch('/api/consultation-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: merged.name ?? '',
+            phone: merged.phone ?? '',
+            date: bookingDate,
+            timeSlot: bookingTimeSlot,
+            estimatedPrice: merged.estimatedPrice ?? 0,
+            tenantId,
+          }),
+          signal: AbortSignal.timeout(8000),
+        });
+      } catch (err) {
+        console.error('[booking] Consultation request error:', err);
+        // Non-fatal
+      }
+
+      posthog?.capture('booking_confirmed', {
+        tenant_id: tenantId,
+        booking_date: bookingDate,
+      });
+
+      setStep(7);
+    },
+    [funnelData, tenantId]
+  );
+
+  // ── Booking skipped: store state and advance to Results ──
+  const handleBookingSkip = useCallback(() => {
+    const merged: FunnelData = { ...funnelData, bookingCompleted: false };
+    setFunnelData(merged);
+    saveToStorage(merged);
+    setStep(7);
+  }, [funnelData]);
+
   // ── Out-of-area shortcut: store locally, skip CRM ──
   const handleOutOfAreaSubmit = useCallback(
     (finalData: Partial<FunnelData>) => {
@@ -239,8 +290,8 @@ export default function FunnelProvider({
           has_booking: merged.bookingCompleted,
         });
 
-        // Navigate to Results
-        setStep(bookingEnabled ? 7 : 6);
+        // Navigate to Booking step (if enabled) or Results
+        setStep(6);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
         setSubmitError(message);
@@ -267,6 +318,8 @@ export default function FunnelProvider({
       submitting,
       submitError,
       handleSubmit,
+      handleBookingConfirm,
+      handleBookingSkip,
       handleOutOfAreaSubmit,
       handleReset,
       hydrated,
@@ -279,7 +332,7 @@ export default function FunnelProvider({
     [
       funnelData, updateFunnelData, setImageFile,
       step, handleNext, handleBack,
-      submitting, submitError, handleSubmit, handleOutOfAreaSubmit, handleReset,
+      submitting, submitError, handleSubmit, handleBookingConfirm, handleBookingSkip, handleOutOfAreaSubmit, handleReset,
       hydrated, bookingEnabled, brandName, companyName, privacyPolicyUrl, tenantId,
     ]
   );

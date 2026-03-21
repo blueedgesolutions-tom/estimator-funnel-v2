@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   // Get the tenant config server-side via the request headers
   const [tenant, tenantId] = await Promise.all([getTenant(), getTenantId()]);
-  const { ghl_webhook_url, ghl_booking_webhook_url, contact_email, brand_name, resend_from } =
+  const { ghl_webhook_url, contact_email, brand_name, resend_from } =
     tenant.config;
 
   const errors: string[] = [];
@@ -51,10 +51,7 @@ export async function POST(req: NextRequest) {
       sqft:       String(funnelData.paverSquareFootage ?? ''),
       timeline:   funnelData.timeline ?? '',
       estimated_price: String(funnelData.estimatedPrice ?? ''),
-      booking_date:     funnelData.bookingDate ?? '',
-      booking_time:     funnelData.bookingTimeSlot ?? '',
-      booking_completed: funnelData.bookingCompleted ? 'yes' : 'no',
-      is_out_of_area:   funnelData.isOutOfServiceArea ? 'yes' : 'no',
+      is_out_of_area:  funnelData.isOutOfServiceArea ? 'yes' : 'no',
       session_id:       funnelData.sessionId ?? '',
       source:           brand_name,
       ...funnelData.contactFields,
@@ -75,23 +72,6 @@ export async function POST(req: NextRequest) {
       errors.push('GHL webhook failed');
     }
 
-    // Optional: separate booking webhook
-    if (funnelData.bookingCompleted && funnelData.bookingDate && ghl_booking_webhook_url) {
-      try {
-        await fetch(ghl_booking_webhook_url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...ghlPayload,
-            booking_date: funnelData.bookingDate,
-            booking_time: funnelData.bookingTimeSlot,
-          }),
-          signal: AbortSignal.timeout(6000),
-        });
-      } catch (err) {
-        console.error('[submit-lead] GHL booking webhook error:', err);
-      }
-    }
   }
 
   // ── 2. Confirmation email via Resend ──
@@ -156,7 +136,6 @@ function buildLeadEmail(data: SubmitLeadPayload['funnelData'], brandName: string
       <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Options</td><td style="padding:8px;border-bottom:1px solid #eee">${(data.options ?? []).join(', ') || 'None'}</td></tr>
       <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Timeline</td><td style="padding:8px;border-bottom:1px solid #eee">${data.timeline ?? '—'}</td></tr>
       <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Estimate</td><td style="padding:8px;border-bottom:1px solid #eee;font-weight:bold">${price}</td></tr>
-      ${data.bookingDate ? `<tr><td style="padding:8px;border-bottom:1px solid #eee;color:#666">Booking</td><td style="padding:8px;border-bottom:1px solid #eee">${data.bookingDate} · ${data.bookingTimeSlot}</td></tr>` : ''}
       <tr><td style="padding:8px;color:#666">Out of area</td><td style="padding:8px">${data.isOutOfServiceArea ? 'Yes' : 'No'}</td></tr>
     </table>
   `;

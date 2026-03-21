@@ -7,7 +7,6 @@ import { format, addDays, startOfDay, isWeekend } from 'date-fns';
 import { Sunrise, Sun } from 'lucide-react';
 import { useFunnel } from '../FunnelProvider';
 import { resolveCopy } from '@/lib/copy';
-import { calculatePrice } from '@/lib/pricing';
 import type { TenantConfig } from '@/lib/types';
 
 interface Props {
@@ -30,12 +29,14 @@ function getAvailableWeekdays(count: number): Date[] {
 export default function BookingStep({ tenant }: Props) {
   const {
     funnelData,
-    submitting,
-    submitError,
-    handleSubmit,
+    handleBookingConfirm,
+    handleBookingSkip,
     handleBack,
     bookingEnabled,
   } = useFunnel();
+
+  const [loading, setLoading] = useState(false);
+  const [bookingError, setBookingError] = useState('');
   const copy = resolveCopy(tenant);
   const { bookingSkipEnabled, consultationDaysAhead = 21 } = tenant.estimate;
 
@@ -58,24 +59,21 @@ export default function BookingStep({ tenant }: Props) {
 
   async function handleConfirm() {
     if (!selectedDay || !timeSlot) return;
-    const estimatedPrice = calculatePrice(funnelData, tenant.catalog);
-    await handleSubmit({
-      bookingDate: format(selectedDay, 'yyyy-MM-dd'),
-      bookingTimeSlot: timeSlot,
-      bookingCompleted: true,
-      estimatedPrice,
-    });
+    setLoading(true);
+    setBookingError('');
+    try {
+      await handleBookingConfirm(format(selectedDay, 'yyyy-MM-dd'), timeSlot);
+    } catch {
+      setBookingError('Something went wrong. Please try again or skip to continue.');
+      setLoading(false);
+    }
   }
 
-  async function handleSkip() {
-    const estimatedPrice = calculatePrice(funnelData, tenant.catalog);
-    await handleSubmit({
-      bookingCompleted: false,
-      estimatedPrice,
-    });
+  function handleSkip() {
+    handleBookingSkip();
   }
 
-  const canConfirm = selectedDay !== undefined && timeSlot !== '' && !submitting;
+  const canConfirm = selectedDay !== undefined && timeSlot !== '' && !loading;
 
   if (!bookingEnabled) return null;
 
@@ -151,9 +149,9 @@ export default function BookingStep({ tenant }: Props) {
           </div>
         )}
 
-        {submitError && (
+        {bookingError && (
           <div className="status-banner error" style={{ marginBottom: 'var(--space-md)' }}>
-            {submitError}
+            {bookingError}
           </div>
         )}
 
@@ -165,7 +163,7 @@ export default function BookingStep({ tenant }: Props) {
               <button
                 className="btn-ghost"
                 onClick={handleSkip}
-                disabled={submitting}
+                disabled={loading}
               >
                 {copy.booking.skipCta}
               </button>
@@ -175,7 +173,7 @@ export default function BookingStep({ tenant }: Props) {
               onClick={handleConfirm}
               disabled={!canConfirm}
             >
-              {submitting ? 'Confirming…' : copy.booking.confirmCta}
+              {loading ? 'Confirming…' : copy.booking.confirmCta}
             </button>
           </div>
         </div>

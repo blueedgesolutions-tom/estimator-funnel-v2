@@ -71,7 +71,7 @@ export default async function RootLayout({
             brandName={tenant.config.brand_name}
             companyName={tenant.config.company_name}
             privacyPolicyUrl={tenant.config.privacy_policy_url}
-            bookingEnabled={tenant.estimate.bookingEnabled}
+            bookingEnabled={tenant.estimate.bookingEnabled && !!tenant.config.ghl_booking_webhook_url}
           >
             {children}
           </FunnelProvider>

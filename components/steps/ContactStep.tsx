@@ -33,7 +33,7 @@ function extractDigits(value: string): string {
 const TOTAL_STEPS = 5;
 
 export default function ContactStep({ tenant }: Props) {
-  const { funnelData, updateFunnelData, submitting, submitError, handleSubmit, handleNext, handleBack, bookingEnabled } = useFunnel();
+  const { funnelData, submitting, submitError, handleSubmit, handleBack, bookingEnabled } = useFunnel();
   const copy = resolveCopy(tenant);
 
   const [name, setName] = useState(funnelData.name ?? '');
@@ -129,14 +129,7 @@ export default function ContactStep({ tenant }: Props) {
       estimatedPrice,
     };
 
-    if (bookingEnabled) {
-      // Save contact data to context and advance to Booking step.
-      // The actual API submission happens when the user confirms or skips booking.
-      updateFunnelData(finalData);
-      handleNext();
-    } else {
-      await handleSubmit(finalData);
-    }
+    await handleSubmit(finalData);
   }
 
   const canSubmit =
@@ -294,7 +287,7 @@ export default function ContactStep({ tenant }: Props) {
               className="btn-primary"
               disabled={!canSubmit}
             >
-              {submitting ? 'Submitting…' : bookingEnabled ? 'Continue' : 'Get my estimate'}
+              {submitting ? 'Submitting…' : 'Get my estimate'}
             </button>
           </div>
         </form>
