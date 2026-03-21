@@ -92,7 +92,7 @@ export const DEFAULT_COPY_TEMPLATES: Record<string, string> = {
   'results.financingHeadline':    'Make it work with your budget',
   'results.financingNote':        '*Estimated monthly payment based on {{apr}}% APR over {{term}} years. Subject to credit approval. Contact us for current financing options.',
   'results.testimonialsEyebrow':  'Real Results',
-  'results.testimonialsHeadline': 'Here\'s what other homeowners had to say about working with {{brandName}}',
+  'results.testimonialsHeadline': 'Here\'s how it feels to go with {{brandName}}',
   'results.faqEyebrow':           'FAQ',
   'results.faqHeadline':          'Questions about your estimate',
   'results.nextStepsEyebrow':     'What Happens Next',

@@ -29,6 +29,26 @@ export const DEFAULT_TENANT: TenantConfig = {
     ghl_webhook_url: '',
     financing_url: 'https://example.com/apply',
     state_license: 'LIC-0000000',
+    testimonials: [
+      {
+        quote: 'From the first consultation to the final walkthrough, the whole process was smooth and stress-free. The team was communicative, on schedule, and the finished pool exceeded every expectation we had.',
+        author: 'Michael R.',
+        location: 'Austin, TX',
+        rating: 5,
+      },
+      {
+        quote: 'We got quotes from four different builders. Not only were they the most competitive, the attention to detail in their work is obvious. Our backyard is completely transformed.',
+        author: 'Sarah & Tom K.',
+        location: 'Charlotte, NC',
+        rating: 5,
+      },
+      {
+        quote: 'Six weeks start to finish. I was told that was fast and I believe it. Quality work, clean site, and they actually showed up when they said they would. Highly recommend.',
+        author: 'James L.',
+        location: 'Tampa, FL',
+        rating: 5,
+      },
+    ],
     theme: {
       primary: '#1B6CA8',
     },

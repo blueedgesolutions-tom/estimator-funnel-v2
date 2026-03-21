@@ -767,10 +767,14 @@ img {
   border: 1px solid var(--canvas-border);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .testimonial-stars {
   display: flex;
+  justify-content: center;
   gap: 2px;
   margin-bottom: var(--space-sm);
   color: var(--brand-accent);
@@ -783,6 +787,7 @@ img {
   color: var(--text-secondary);
   line-height: 1.7;
   margin-bottom: var(--space-md);
+  flex: 1;
 }
 
 .testimonial-author {
@@ -795,6 +800,16 @@ img {
   font-size: var(--text-xs);
   color: var(--text-muted);
   margin-top: 2px;
+}
+
+.testimonial-google-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: var(--space-lg);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }
 
 /* ─────────────────────────────────────────────────────────
