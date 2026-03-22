@@ -495,9 +495,9 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
               placeholder="hello@company.com" type="email" />
             <Field label="Privacy policy URL" id="privacy_url" value={privacyUrl} onChange={setPrivacyUrl}
               placeholder="https://..." />
-            <Field label="Resend from address" id="resend_from" value={resendFrom} onChange={setResendFrom}
-              placeholder='AquaDreams <hello@aquadreams.com>'
-              hint="Optional. Defaults to noreply@ the contact email domain." />
+            <Field label="Email sender address" id="resend_from" value={resendFrom} onChange={setResendFrom}
+              placeholder='Pool Co. <hello@yourcompany.com>'
+              hint="Optional. Overrides the default shared sender. Must be a verified domain in Resend." />
             <Field label="GHL webhook URL" id="ghl_webhook" value={ghlWebhook} onChange={setGhlWebhook}
               placeholder="https://services.leadconnectorhq.com/hooks/..." fullWidth />
             <Field label="GHL booking webhook URL" id="ghl_booking_webhook" value={ghlBookingWebhook}
