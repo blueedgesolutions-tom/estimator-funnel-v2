@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Check, Copy, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { resolveTheme } from '@/lib/theme';
 import { DEFAULT_COPY_TEMPLATES } from '@/lib/copy';
@@ -157,6 +157,47 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   const [serviceAreaWarning, setServiceAreaWarning] = useState(sa.warningMessage);
   const [blockedZips, setBlockedZips] = useState((sa.blockedZips ?? []).join(', '));
   const [blockedStates, setBlockedStates] = useState((sa.blockedStates ?? []).join(', '));
+
+  // ── Service area center autocomplete ──
+  const [saQuery, setSaQuery] = useState('');
+  const [saPredictions, setSaPredictions] = useState<{ place_id: string; description: string; main_text: string; secondary_text: string }[]>([]);
+  const [saLoadingPredictions, setSaLoadingPredictions] = useState(false);
+  const [saLoadingGeocode, setSaLoadingGeocode] = useState(false);
+  const saDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchSaPredictions = useCallback(async (input: string) => {
+    if (input.length < 3) { setSaPredictions([]); return; }
+    setSaLoadingPredictions(true);
+    try {
+      const res = await fetch(`/api/places-autocomplete?input=${encodeURIComponent(input)}`);
+      const data = await res.json();
+      setSaPredictions(data.predictions ?? []);
+    } catch {
+      setSaPredictions([]);
+    } finally {
+      setSaLoadingPredictions(false);
+    }
+  }, []);
+
+  function handleSaQueryChange(value: string) {
+    setSaQuery(value);
+    if (saDebounceRef.current) clearTimeout(saDebounceRef.current);
+    saDebounceRef.current = setTimeout(() => fetchSaPredictions(value), 500);
+  }
+
+  async function selectSaPrediction(prediction: { place_id: string; description: string }) {
+    setSaQuery(prediction.description);
+    setSaPredictions([]);
+    setSaLoadingGeocode(true);
+    try {
+      const res = await fetch(`/api/geocode-place?place_id=${encodeURIComponent(prediction.place_id)}`);
+      const data = await res.json();
+      if (data.address?.lat != null) setServiceAreaLat(String(data.address.lat));
+      if (data.address?.lng != null) setServiceAreaLng(String(data.address.lng));
+    } finally {
+      setSaLoadingGeocode(false);
+    }
+  }
   const [blockedCounties, setBlockedCounties] = useState((sa.blockedCounties ?? []).join(', '));
 
   // ── Booking ──
@@ -555,6 +596,42 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
           />
           {serviceAreaEnabled && (
             <div className="admin-field-grid" style={{ marginTop: 'var(--space-md)' }}>
+
+              {/* Address search — fills lat/lng automatically */}
+              <div className="form-group admin-field-full">
+                <label className="form-label">Search center address</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={saQuery}
+                    onChange={(e) => handleSaQueryChange(e.target.value)}
+                    placeholder="123 Main St, Austin, TX"
+                  />
+                  {(saLoadingPredictions || saLoadingGeocode) && (
+                    <div style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                      {saLoadingGeocode ? 'Locating…' : 'Searching…'}
+                    </div>
+                  )}
+                  {saPredictions.length > 0 && (
+                    <div className="autocomplete-dropdown">
+                      {saPredictions.map((pred) => (
+                        <button
+                          key={pred.place_id}
+                          type="button"
+                          className="autocomplete-item"
+                          onClick={() => selectSaPrediction(pred)}
+                        >
+                          <span className="autocomplete-item-main">{pred.main_text}</span>
+                          <span className="autocomplete-item-secondary">{pred.secondary_text}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="form-hint">Selects a location and auto-fills the coordinates below.</div>
+              </div>
+
               <Field label="Center latitude" id="sa_lat" value={serviceAreaLat} onChange={setServiceAreaLat}
                 type="number" placeholder="30.2672" />
               <Field label="Center longitude" id="sa_lng" value={serviceAreaLng} onChange={setServiceAreaLng}
