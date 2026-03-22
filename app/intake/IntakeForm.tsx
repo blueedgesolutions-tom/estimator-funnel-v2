@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, AlertCircle, Info, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 import type { TenantCatalog, PoolModel, EquipmentOption, DeckingOption } from '@/lib/types';
+import { MANUFACTURERS } from '@/lib/manufacturers/index';
 
 // ─────────────────────────────────────────────────────────
 // Types
@@ -14,10 +15,16 @@ interface EquipmentState {
   dynamicPricing: boolean;
 }
 
+interface FiberglassModelState {
+  enabled: boolean;
+  price: string;
+}
+
 interface IntakeSaveState {
   poolModels: Record<string, string>;
   equipment: Record<string, EquipmentState>;
   decking: Record<string, string>;
+  fiberglassModels: Record<string, FiberglassModelState>;
 }
 
 interface Props {
@@ -113,7 +120,7 @@ function PoolModelCard({
       <div className="intake-item-top">
         <div>
           <div className="intake-item-name">{model.name}</div>
-          <div className="intake-item-meta">{model.width}′ × {model.length}′</div>
+          <div className="intake-item-meta">{Math.round(model.width)}′ × {Math.round(model.length)}′</div>
         </div>
       </div>
       {model.description && (
@@ -318,6 +325,9 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     Object.fromEntries(catalog.deckingOptions.map((d) => [d.id, String(d.pricePerSqft)]))
   );
 
+  const [fiberglassModels, setFiberglassModels] = useState<Record<string, FiberglassModelState>>({});
+  const [selectedManufacturer, setSelectedManufacturer] = useState<string>(MANUFACTURERS[0]?.id ?? '');
+
   const [initialized, setInitialized] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -347,6 +357,9 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
         if (saved.decking) {
           setDecking((prev) => ({ ...prev, ...saved.decking }));
         }
+        if (saved.fiberglassModels) {
+          setFiberglassModels((prev) => ({ ...prev, ...saved.fiberglassModels }));
+        }
       }
     } catch {
       // Ignore corrupted storage
@@ -358,12 +371,12 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
   useEffect(() => {
     if (!initialized) return;
     try {
-      const payload: IntakeSaveState = { poolModels, equipment, decking };
+      const payload: IntakeSaveState = { poolModels, equipment, decking, fiberglassModels };
       localStorage.setItem(storageKey, JSON.stringify(payload));
     } catch {
       // Ignore storage errors
     }
-  }, [poolModels, equipment, decking, initialized, storageKey]);
+  }, [poolModels, equipment, decking, fiberglassModels, initialized, storageKey]);
 
   // ── Helpers ──
   function updateEquipment(id: string, update: Partial<EquipmentState>) {
@@ -401,8 +414,20 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
       }
     }
 
+    for (const mfr of MANUFACTURERS) {
+      for (const model of mfr.models) {
+        const state = fiberglassModels[model.id];
+        if (!state?.enabled) continue;
+        const price = parseFloat(state.price ?? '0');
+        if (!price || price <= 0) {
+          errors.push(`${model.name} (${mfr.name}) — base price is required.`);
+          ids.add(model.id);
+        }
+      }
+    }
+
     return { errors, ids };
-  }, [catalog, poolModels, equipment, decking]);
+  }, [catalog, poolModels, equipment, decking, fiberglassModels]);
 
   // ── Submit ──
   async function handleSubmit() {
@@ -419,6 +444,16 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     setSubmitting(true);
 
     try {
+      const activeManufacturerModels = MANUFACTURERS.flatMap((mfr) =>
+        mfr.models
+          .filter((m) => fiberglassModels[m.id]?.enabled)
+          .map((m) => ({
+            ...m,
+            basePrice: parseFloat(fiberglassModels[m.id].price) || 0,
+            enabled: true,
+          }))
+      );
+
       const body = {
         poolModels: catalog.poolModels.map((m) => ({
           id: m.id,
@@ -434,6 +469,7 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           id: d.id,
           pricePerSqft: parseFloat(decking[d.id]) || 0,
         })),
+        ...(activeManufacturerModels.length > 0 ? { customPoolModels: activeManufacturerModels } : {}),
       };
 
       const res = await fetch('/api/intake-submit', {
@@ -577,6 +613,91 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           ))}
         </div>
       </section>
+
+      {/* ── Section 4: Fiberglass Models (Optional) ── */}
+      {MANUFACTURERS.length > 0 && (
+        <section className="intake-section">
+          <SectionHeader
+            number={4}
+            title="Fiberglass Models"
+            subtitle="Optional — select models you install"
+          />
+          <Callout>
+            If you install fiberglass pools, select the models you offer below and enter your
+            installed price for each. Leave this section blank if you only install concrete pools.
+          </Callout>
+
+          {/* Manufacturer tabs */}
+          {MANUFACTURERS.length > 1 && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+              {MANUFACTURERS.map((mfr) => (
+                <button
+                  key={mfr.id}
+                  type="button"
+                  className={selectedManufacturer === mfr.id ? 'btn-primary' : 'btn-ghost'}
+                  style={{ fontSize: 13, padding: '4px 14px' }}
+                  onClick={() => setSelectedManufacturer(mfr.id)}
+                >
+                  {mfr.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Models for selected manufacturer */}
+          {MANUFACTURERS.filter((m) => m.id === selectedManufacturer).map((mfr) => (
+            <div key={mfr.id} className="intake-items">
+              {mfr.models.map((model) => {
+                const state = fiberglassModels[model.id] ?? { enabled: false, price: '' };
+                const hasError = errorIds.has(model.id);
+                return (
+                  <div key={model.id} className={`intake-item-card${!state.enabled ? ' is-disabled' : ''}${hasError ? ' has-error' : ''}`}>
+                    <div className="intake-item-top">
+                      <div>
+                        <div className="intake-item-name">{model.name}</div>
+                        <div className="intake-item-meta">{Math.round(model.width)}′ × {Math.round(model.length)}′ · {mfr.name}</div>
+                      </div>
+                      <label className="intake-toggle-wrap">
+                        <div
+                          className={`intake-toggle${state.enabled ? ' is-on' : ''}`}
+                          onClick={() => setFiberglassModels((prev) => ({
+                            ...prev,
+                            [model.id]: { ...state, enabled: !state.enabled },
+                          }))}
+                          role="switch"
+                          aria-checked={state.enabled}
+                          tabIndex={0}
+                          onKeyDown={(e) => e.key === ' ' && setFiberglassModels((prev) => ({
+                            ...prev,
+                            [model.id]: { ...state, enabled: !state.enabled },
+                          }))}
+                        />
+                        <span className="intake-toggle-label">{state.enabled ? 'Offered' : 'Not offered'}</span>
+                      </label>
+                    </div>
+
+                    {state.enabled && (
+                      <div className="intake-pricing-area">
+                        <PriceInput
+                          label="Your installed price"
+                          value={state.price}
+                          onChange={(v) => setFiberglassModels((prev) => ({
+                            ...prev,
+                            [model.id]: { ...state, price: v },
+                          }))}
+                          placeholder="e.g. 45000"
+                          hasError={hasError}
+                        />
+                        {hasError && <div className="intake-field-error">A price is required for this model.</div>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* Bottom spacer for sticky bar */}
       <div style={{ height: 96 }} />

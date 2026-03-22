@@ -544,7 +544,7 @@ export default function ResultsStep({ tenant }: Props) {
                   <>
                     <div className="estimate-card-pool-name">{selectedPool.name} Pool</div>
                     <div className="estimate-card-pool-dims">
-                      {selectedPool.width}′ × {selectedPool.length}′ · Base price {formatCurrency(selectedPool.basePrice)}
+                      {Math.round(selectedPool.width)}′ × {Math.round(selectedPool.length)}′ · Base price {formatCurrency(selectedPool.basePrice)}
                     </div>
                   </>
                 ) : (
@@ -566,7 +566,7 @@ export default function ResultsStep({ tenant }: Props) {
                     <div className="estimate-feature-cell">
                       <div className="estimate-feature-name">{selectedDecking.name} Decking</div>
                       <div className="estimate-feature-desc">
-                        {funnelData.paverSquareFootage} sqft · {formatCurrency(selectedDecking.pricePerSqft)}/sqft
+                        {Math.round(funnelData.paverSquareFootage!)} sqft · {formatCurrency(selectedDecking.pricePerSqft)}/sqft
                       </div>
                     </div>
                   )}

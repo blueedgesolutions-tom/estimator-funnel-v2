@@ -8,6 +8,7 @@ import {
   DEFAULT_DECKING_PRESETS,
   DEFAULT_MINIMUM_DECKING_WIDTH,
 } from './options';
+import { KISOL_MODELS } from './manufacturers/kisol';
 
 // ─────────────────────────────────────────────────────────
 // DEFAULT TENANT
@@ -54,7 +55,10 @@ export const DEFAULT_TENANT: TenantConfig = {
     },
   },
   catalog: {
-    poolModels: DEFAULT_POOL_MODELS,
+    poolModels: [
+      ...DEFAULT_POOL_MODELS,
+      ...KISOL_MODELS.map((m) => ({ ...m, basePrice: 0 })),
+    ],
     equipmentOptions: DEFAULT_EQUIPMENT_OPTIONS,
     deckingOptions: DEFAULT_DECKING_OPTIONS,
     deckingPresetWidths: DEFAULT_DECKING_PRESETS,

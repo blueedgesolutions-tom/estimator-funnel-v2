@@ -12,31 +12,31 @@ import type {
 
 export const DEFAULT_POOL_MODELS: PoolModel[] = [
   {
+    id: 'cocktail',
+    name: 'Cocktail',
+    width: 8,
+    length: 16,
+    basePrice: 42000,
+    description: 'The perfect entry-level pool for small suburban yards. Currently a very popular option.',
+    features: ['Best choice for small yards', 'Great budget-friendly option', 'Great for a relaxing summer evening dip']
+  },
+  {
     id: 'plunge',
     name: 'Plunge',
     width: 12,
     length: 24,
     basePrice: 48000,
-    description: 'Compact and elegant — ideal for smaller yards or a dedicated relaxation space.',
-    features: ['Perfect for small–medium lots', 'Lower maintenance footprint', 'Great for entertaining'],
+    description: 'The compact and sensible option. Great middle ground for smaller yards while maintaining decent swimming space.',
+    features: ['Perfect for small–medium lots', 'Surprisingly useable foot-print', 'Often considered our best \"bang-for-buck\"'],
   },
   {
     id: 'classic',
     name: 'Classic',
-    width: 14,
-    length: 28,
+    width: 15,
+    length: 30,
     basePrice: 62000,
-    description: 'The most popular choice — generous swimming space with a timeless shape.',
-    features: ['Ideal for lap swimming', 'Fits most standard lots', 'Versatile design'],
-  },
-  {
-    id: 'entertainer',
-    name: 'Entertainer',
-    width: 16,
-    length: 32,
-    basePrice: 79000,
-    description: 'Built for gatherings — wide open water with room for everyone.',
-    features: ['Perfect for families', 'Ample space for features', 'Great resale value'],
+    description: 'The most popular choice. Generous swimming space with a timeless form factor.',
+    features: ['Ideal for most normal-sized backyards', 'Perfect size for all kinds of aquatic games', 'Dimensions allow for a very customizable layout'],
   },
   {
     id: 'resort',
@@ -44,7 +44,7 @@ export const DEFAULT_POOL_MODELS: PoolModel[] = [
     width: 18,
     length: 36,
     basePrice: 98000,
-    description: 'A statement pool. Full resort-style dimensions for the ultimate backyard experience.',
+    description: 'A statement pool. Full-sized dimensions for the ultimate backyard experience.',
     features: ['Hotel-quality proportions', 'Space for all water features', 'Maximum design flexibility'],
   },
   {
@@ -53,7 +53,7 @@ export const DEFAULT_POOL_MODELS: PoolModel[] = [
     width: 20,
     length: 40,
     basePrice: 125000,
-    description: 'The pinnacle of residential aquatics — a pool that defines the property.',
+    description: 'The pinnacle of residential swimming pools. A piece that defines the property.',
     features: ['Exceptional scale', 'Full customisation possible', 'Landmark backyard piece'],
   },
 ];
@@ -67,7 +67,7 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
   {
     id: 'saltwater',
     name: 'Saltwater System',
-    description: 'Gentler on skin and eyes than traditional chlorine. Self-generating and easier to maintain.',
+    description: 'Gentler on skin and eyes than traditional chlorine. Cheaper to run. Self-generating and easier to maintain.',
     category: 'Sanitization',
     price: 4500,
   },
@@ -90,7 +90,7 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
   {
     id: 'gas-heater',
     name: 'Gas Heater',
-    description: 'Fast, powerful heating ideal for pools that need rapid temperature changes.',
+    description: 'Fast, powerful heating ideal for pools that need rapid temperature changes (e.g. vacation home).',
     category: 'Heating',
     price: 4200,
     incompatibleWith: ['spa'],  // spa includes its own heater
@@ -106,11 +106,12 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
   // Features
   {
     id: 'spa',
-    name: 'Attached Spa',
-    description: 'A seamlessly integrated spa/hot tub — the ultimate relaxation upgrade.',
+    name: 'Built-in Spa',
+    description: 'A seamlessly integrated spa/hot tub. Either level or raised. Will instantly level up any backyard pool project.',
     category: 'Features',
     price: 18000,
     incompatibleWith: ['gas-heater'],
+    materials: ['concrete'],
   },
   {
     id: 'sun-shelf',
@@ -118,18 +119,19 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'A shallow entry platform perfect for loungers, toddlers, and pets.',
     category: 'Features',
     price: 5500,
+    materials: ['concrete'],
   },
   {
-    id: 'waterfall',
-    name: 'Waterfall Feature',
-    description: 'A natural-look water cascade that adds ambience and soothing sound.',
+    id: 'sheer-water-feature',
+    name: 'Sheer-Descent Water Feature',
+    description: 'Raised backwall allowing installation of an elegant sheer-descent water feature. Another instant level up to any pool project.',
     category: 'Features',
     price: 6500,
   },
   {
     id: 'deck-jets',
     name: 'Deck Jets',
-    description: 'Elegant water arcs that shoot from the deck into the pool — a favourite with kids.',
+    description: 'Elegant water arcs that shoot from the deck into the pool. Very popular with kids and pets.',
     category: 'Features',
     price: 3200,
   },
@@ -168,24 +170,24 @@ export const DEFAULT_DECKING_OPTIONS: DeckingOption[] = [
   {
     id: 'poured-concrete',
     name: 'Poured Concrete',
-    description: 'Clean, durable, and cost-effective. Easy to maintain and highly customisable.',
+    description: 'Clean, durable, and cost-effective. Easy to maintain and highly customisable. Can be sealed at addionnal cost.',
     pricePerSqft: 12,
   },
   {
     id: 'stamped-concrete',
     name: 'Stamped Concrete',
-    description: 'The look of stone or tile at a fraction of the price. Textured and slip-resistant.',
+    description: 'The look of stone or tile at a fraction of the price. Textured and slip-resistant. Can be sealed at addionnal cost.',
     pricePerSqft: 18,
   },
   {
     id: 'travertine',
     name: 'Travertine Pavers',
-    description: 'Premium natural stone that stays cool underfoot and looks timeless.',
+    description: 'Premium natural stone that stays cool underfoot and looks timeless. Typically available in Ivory, Silver, and Noce colors.',
     pricePerSqft: 28,
   },
   {
-    id: 'brick-pavers',
-    name: 'Brick Pavers',
+    id: 'tumbled-pavers',
+    name: 'Standard Pavers',
     description: 'Classic warmth and character. Individual pavers can be replaced if damaged.',
     pricePerSqft: 22,
   },
@@ -195,6 +197,18 @@ export const DEFAULT_DECKING_OPTIONS: DeckingOption[] = [
     description: 'Organic, unique, and luxurious. No two flagstone decks look the same.',
     pricePerSqft: 35,
   },
+  {
+    id: 'bluestone',
+    name: 'Bluestone Pavers',
+    description: 'A classic premium decking material. Popular in higher-end builds.',
+    pricePerSqft: 35,
+  },
+  {
+    id: 'porcelain-tile',
+    name: 'Porcelain Tiles',
+    description: 'Our highest-end finish. Will level up any backyard to a new level of luxury. Many options available.',
+    pricePerSqft: 40,
+  }
 ];
 
 // ─────────────────────────────────────────────────────────
@@ -202,10 +216,10 @@ export const DEFAULT_DECKING_OPTIONS: DeckingOption[] = [
 // ─────────────────────────────────────────────────────────
 
 export const DEFAULT_DECKING_PRESETS: DeckingPresetWidth[] = [
-  { key: '4ft', label: 'Minimal — 4 ft around pool', width: 4 },
-  { key: '6ft', label: 'Standard — 6 ft around pool', width: 6 },
-  { key: '8ft', label: 'Generous — 8 ft around pool', width: 8 },
-  { key: '10ft', label: 'Expansive — 10 ft around pool', width: 10 },
+  { key: '4ft', label: 'Minimal | 4 ft around pool', width: 4 },
+  { key: '6ft', label: 'Standard | 6 ft around pool', width: 6 },
+  { key: '8ft', label: 'Generous | 8 ft around pool', width: 8 },
+  { key: '10ft', label: 'Expansive | 10 ft around pool', width: 10 },
 ];
 
 export const DEFAULT_MINIMUM_DECKING_WIDTH = 4;

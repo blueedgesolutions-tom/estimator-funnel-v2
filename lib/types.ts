@@ -30,6 +30,15 @@ export interface PoolModel {
   description?: string;
   features?: string[];
   enabled?: boolean;
+  material?: 'concrete' | 'fiberglass';
+  manufacturer?: string;
+  images?: string[];
+}
+
+export interface ManufacturerDef {
+  id: string;
+  name: string;
+  models: Omit<PoolModel, 'basePrice' | 'enabled'>[];
 }
 
 export interface EquipmentOption {
@@ -42,6 +51,7 @@ export interface EquipmentOption {
   pricing_formula?: string;
   category?: string;
   incompatibleWith?: string[];  // option IDs that cannot be selected together
+  materials?: ('concrete' | 'fiberglass')[];  // omit = compatible with all materials
   enabled?: boolean;
 }
 
@@ -209,6 +219,7 @@ export interface RawTenantConfig {
     deckingOptions: RawCatalogDeckingOption[];
     deckingPresetWidths?: DeckingPresetWidth[];
     minimumDeckingWidth?: number;
+    customPoolModels?: PoolModel[];
   };
   estimate: TenantEstimateConfig;
   copy?: TenantCopy;

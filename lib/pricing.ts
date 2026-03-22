@@ -50,7 +50,7 @@ export function calculateDeckingSquareFootage(
   const outer =
     (pool.width + 2 * effectiveWidth) * (pool.length + 2 * effectiveWidth);
   const inner = pool.width * pool.length;
-  return outer - inner;
+  return Math.round(outer - inner);
 }
 
 // ─────────────────────────────────────────────────────────

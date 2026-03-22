@@ -60,7 +60,7 @@ export function resolveCatalog(
     .filter(Boolean) as TenantCatalog['deckingOptions'];
 
   return {
-    poolModels,
+    poolModels: [...poolModels, ...(raw.customPoolModels ?? [])],
     equipmentOptions,
     deckingOptions,
     deckingPresetWidths: raw.deckingPresetWidths ?? DEFAULT_DECKING_PRESETS,

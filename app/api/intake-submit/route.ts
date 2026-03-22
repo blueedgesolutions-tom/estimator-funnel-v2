@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     poolModels: Array<{ id: string; basePrice: number }>;
     equipmentOptions: Array<{ id: string; price: number; enabled: boolean; dynamicPricing?: boolean }>;
     deckingOptions: Array<{ id: string; pricePerSqft: number }>;
+    customPoolModels?: Array<Record<string, unknown>>;
   };
 
   try {

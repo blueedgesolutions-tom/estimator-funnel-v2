@@ -52,7 +52,7 @@ export function buildEstimateEmailHtml(params: {
   // ─── Selections rows ───────────────────────────────────────
   const selectionRows = [
     pool
-      ? row('Pool Model', `${pool.name} (${pool.width}′ × ${pool.length}′)`)
+      ? row('Pool Model', `${pool.name} (${Math.round(pool.width)}′ × ${Math.round(pool.length)}′)`)
       : '',
     selectedOptions.length > 0
       ? row('Options', selectedOptions.map((o) => o.name).join(', '))

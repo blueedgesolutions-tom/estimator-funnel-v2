@@ -20,16 +20,27 @@ export default function OptionsStep({ tenant }: Props) {
 
   const [selected, setSelected] = useState<string[]>(funnelData.options ?? []);
 
+  const selectedMaterial = catalog.poolModels.find(
+    (m) => m.id === funnelData.poolModel
+  )?.material ?? 'concrete';
+
+  const compatibleOptions = useMemo(
+    () => catalog.equipmentOptions.filter(
+      (o) => !o.materials || o.materials.includes(selectedMaterial)
+    ),
+    [catalog.equipmentOptions, selectedMaterial]
+  );
+
   // Group options by category
   const grouped = useMemo(() => {
     const map = new Map<string, typeof catalog.equipmentOptions>();
-    for (const opt of catalog.equipmentOptions) {
+    for (const opt of compatibleOptions) {
       const cat = opt.category ?? 'Other';
       if (!map.has(cat)) map.set(cat, []);
       map.get(cat)!.push(opt);
     }
     return map;
-  }, [catalog.equipmentOptions]);
+  }, [compatibleOptions]);
 
   function toggleOption(id: string) {
     const opt = catalog.equipmentOptions.find((o) => o.id === id);

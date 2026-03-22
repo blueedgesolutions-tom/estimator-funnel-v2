@@ -432,6 +432,7 @@ img {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
   width: 100%;
+  align-items: start;
 }
 
 .option-card-grid.cols-3 {

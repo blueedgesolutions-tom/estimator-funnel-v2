@@ -313,10 +313,20 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         contactFields: cfg.contactFields,
       },
       catalog: {
-        poolModels: tenant.catalog.poolModels.map((m) => ({
-          id: m.id,
-          basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
-        })),
+        poolModels: tenant.catalog.poolModels
+          .filter((m) => !m.manufacturer)
+          .map((m) => ({
+            id: m.id,
+            basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
+          })),
+        customPoolModels: tenant.catalog.poolModels.some((m) => !!m.manufacturer)
+          ? tenant.catalog.poolModels
+              .filter((m) => !!m.manufacturer)
+              .map((m) => ({
+                ...m,
+                basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
+              }))
+          : undefined,
         equipmentOptions: tenant.catalog.equipmentOptions.map((o) => ({
           id: o.id,
           price: parseInt(optionPrices[o.id] ?? String(o.price)) || o.price,
@@ -673,11 +683,11 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
               <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: 'var(--space-sm)' }}>
                 Pool models — base price ($)
               </div>
-              {tenant.catalog.poolModels.map((model) => (
+              {tenant.catalog.poolModels.filter((m) => !m.manufacturer).map((model) => (
                 <div key={model.id} className="admin-catalog-row">
                   <div>
                     <div className="admin-catalog-name">{model.name}</div>
-                    <div className="admin-catalog-sub">{model.width}′ × {model.length}′</div>
+                    <div className="admin-catalog-sub">{Math.round(model.width)}′ × {Math.round(model.length)}′</div>
                   </div>
                   <input
                     type="number"
@@ -688,6 +698,28 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                   />
                 </div>
               ))}
+              {tenant.catalog.poolModels.some((m) => !!m.manufacturer) && (
+                <>
+                  <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: 'var(--space-md) 0 var(--space-sm)' }}>
+                    Fiberglass models — base price ($)
+                  </div>
+                  {tenant.catalog.poolModels.filter((m) => !!m.manufacturer).map((model) => (
+                    <div key={model.id} className="admin-catalog-row">
+                      <div>
+                        <div className="admin-catalog-name">{model.name}</div>
+                        <div className="admin-catalog-sub">{Math.round(model.width)}′ × {Math.round(model.length)}′ · {model.manufacturer}</div>
+                      </div>
+                      <input
+                        type="number"
+                        className="admin-price-input"
+                        value={poolModelPrices[model.id] ?? ''}
+                        onChange={(e) => setPoolModelPrices((prev) => ({ ...prev, [model.id]: e.target.value }))}
+                        placeholder={String(model.basePrice)}
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
 
             {/* Equipment options */}
@@ -699,7 +731,14 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                 <div key={opt.id} className="admin-catalog-row">
                   <div>
                     <div className="admin-catalog-name">{opt.name}</div>
-                    <div className="admin-catalog-sub">{opt.category}</div>
+                    <div className="admin-catalog-sub">
+                      {opt.category}
+                      {opt.materials && (
+                        <span style={{ marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--canvas-off-white)', border: '1px solid var(--canvas-border)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                          {opt.materials.join(' + ')} only
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <label className="admin-toggle" style={{ gap: 6 }}>
                     <input

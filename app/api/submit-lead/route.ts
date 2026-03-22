@@ -129,7 +129,7 @@ function buildJobDetail(funnelData: FunnelData, catalog: TenantCatalog): string 
   const sqft    = funnelData.paverSquareFootage;
 
   const poolPart = pool
-    ? `${pool.width}' x ${pool.length}' pool${hasSpa ? ' with a built-in spa' : ''}`
+    ? `${Math.round(pool.width)}' x ${Math.round(pool.length)}' pool${hasSpa ? ' with a built-in spa' : ''}`
     : `pool${hasSpa ? ' with a built-in spa' : ''}`;
 
   const deckingPart = (decking && sqft)
