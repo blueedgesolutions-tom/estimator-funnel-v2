@@ -620,17 +620,19 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                 </div>
                 {group.keys.map((key) => {
                   const defaultVal = DEFAULT_COPY_TEMPLATES[key] ?? '';
+                  const rows = Math.max(2, Math.ceil(defaultVal.length / 58));
                   return (
                     <div className="form-group" key={key}>
                       <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ fontFamily: 'monospace', fontSize: 12 }}>{key}</span>
                       </label>
-                      <input
-                        type="text"
+                      <textarea
                         className="form-input"
+                        rows={rows}
                         value={copyOverrides[key] ?? ''}
                         onChange={(e) => setCopyOverride(key, e.target.value)}
                         placeholder={defaultVal}
+                        style={{ resize: 'vertical', lineHeight: 1.5 }}
                       />
                     </div>
                   );
