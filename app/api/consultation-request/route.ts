@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       booking_time: timeSlot,
       estimated_price: String(estimatedPrice),
       source:       `${brand_name} Results Page`,
-      note:         `Post-estimate consultation request for ${date} ${TIME_LABELS[timeSlot]}`,
+      note:         `Consultation request following instant estimate for ${date} ${TIME_LABELS[timeSlot]}`,
     };
 
     try {

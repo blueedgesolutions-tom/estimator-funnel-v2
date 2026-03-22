@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTenant, getTenantId } from '@/lib/tenant';
-import type { SubmitLeadPayload } from '@/lib/types';
+import type { SubmitLeadPayload, FunnelData, TenantCatalog } from '@/lib/types';
 import { buildEstimateEmailHtml } from '@/lib/email';
 import { logSubmission } from '@/lib/submission-log';
 
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       sqft:       String(funnelData.paverSquareFootage ?? ''),
       timeline:   funnelData.timeline ?? '',
       estimated_price: String(funnelData.estimatedPrice ?? ''),
+      job_detail:      buildJobDetail(funnelData, tenant.catalog),
       is_out_of_area:  funnelData.isOutOfServiceArea ? 'yes' : 'no',
       session_id:       funnelData.sessionId ?? '',
       source:           brand_name,
@@ -118,6 +119,38 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
+}
+
+function buildJobDetail(funnelData: FunnelData, catalog: TenantCatalog): string {
+  const pool    = catalog.poolModels.find((m) => m.id === funnelData.poolModel);
+  const optIds  = funnelData.options ?? [];
+  const hasSpa  = optIds.includes('spa');
+  const decking = catalog.deckingOptions.find((d) => d.id === funnelData.deckingType);
+  const sqft    = funnelData.paverSquareFootage;
+
+  const poolPart = pool
+    ? `${pool.width}' x ${pool.length}' pool${hasSpa ? ' with a built-in spa' : ''}`
+    : `pool${hasSpa ? ' with a built-in spa' : ''}`;
+
+  const deckingPart = (decking && sqft)
+    ? `${sqft}sqft of ${decking.name.toLowerCase()} decking`
+    : null;
+
+  const otherOptions = optIds
+    .filter((id) => id !== 'spa')
+    .map((id) => catalog.equipmentOptions.find((o) => o.id === id)?.name.toLowerCase())
+    .filter(Boolean) as string[];
+
+  const optionsPart = otherOptions.length > 0
+    ? `the following ${otherOptions.length === 1 ? 'option' : 'options'}: ${otherOptions.join(', ')}`
+    : null;
+
+  const extras = [deckingPart, optionsPart].filter(Boolean) as string[];
+
+  if (extras.length === 0) return `${poolPart}.`;
+  if (extras.length === 1 && !hasSpa) return `${poolPart} with ${extras[0]}.`;
+  if (extras.length === 1 &&  hasSpa) return `${poolPart} and ${extras[0]}.`;
+  return `${poolPart}, ${extras[0]}, and ${extras[1]}.`;
 }
 
 function buildLeadEmail(data: SubmitLeadPayload['funnelData'], brandName: string): string {

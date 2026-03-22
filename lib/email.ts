@@ -142,7 +142,7 @@ export function buildEstimateEmailHtml(params: {
 
     <!-- CTA -->
     <div style="text-align:center;margin-bottom:24px;">
-      <p style="font-size:14px;color:#5A5A5A;margin:0;">Our team will be in touch if you have any questions.</p>
+      <p style="font-size:14px;color:#5A5A5A;margin:0;">Our team will be in touch shortly to answer any questions and confirm your consultation if you've scheduled one.</p>
     </div>
 
     <!-- Footer -->
