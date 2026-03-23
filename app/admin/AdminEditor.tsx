@@ -138,6 +138,8 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   const [phone, setPhone] = useState(cfg.contact_phone);
   const [email, setEmail] = useState(cfg.contact_email);
   const [privacyUrl, setPrivacyUrl] = useState(cfg.privacy_policy_url);
+  const [stateLicense, setStateLicense] = useState(cfg.state_license ?? '');
+  const [financingUrl, setFinancingUrl] = useState(cfg.financing_url ?? '');
   const [ghlWebhook, setGhlWebhook] = useState(cfg.ghl_webhook_url);
   const [ghlBookingWebhook, setGhlBookingWebhook] = useState(cfg.ghl_booking_webhook_url ?? '');
   const [gtagId, setGtagId] = useState(cfg.gtag_id ?? '');
@@ -378,6 +380,8 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         gtag_id:               gtagId.trim() || undefined,
         fb_pixel_id:           fbPixelId.trim() || undefined,
         resend_from:           resendFrom.trim() || undefined,
+        state_license:         stateLicense.trim() || undefined,
+        financing_url:         financingUrl.trim() || undefined,
         theme: {
           primary: primaryColor,
         },
@@ -549,6 +553,8 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
               placeholder="https://..." fullWidth />
             <Field label="Logo height (px)" id="logo_height" value={logoHeight} onChange={setLogoHeight}
               type="number" placeholder="36" hint="Overrides the default 36px logo height" />
+            <Field label="State contractor license #" id="state_license" value={stateLicense} onChange={setStateLicense}
+              placeholder="CGC1234567" hint="Displayed in the footer where legally required (e.g. Florida)" />
           </div>
         </SectionCard>
 
@@ -584,6 +590,9 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
               placeholder="G-XXXXXXXXXX or GTM-XXXXXXX" />
             <Field label="Facebook Pixel ID" id="fb_pixel_id" value={fbPixelId} onChange={setFbPixelId}
               placeholder="123456789012345" />
+            <Field label="Financing / pre-approval URL" id="financing_url" value={financingUrl} onChange={setFinancingUrl}
+              placeholder="https://..." fullWidth
+              hint="Optional. Shows a 'Get pre-approved' button on the results page financing section." />
           </div>
         </SectionCard>
 

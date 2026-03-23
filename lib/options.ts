@@ -21,8 +21,8 @@ export const DEFAULT_POOL_MODELS: PoolModel[] = [
     features: ['Best choice for small yards', 'Great budget-friendly option', 'Great for a relaxing summer evening dip']
   },
   {
-    id: 'plunge',
-    name: 'Plunge',
+    id: 'classic',
+    name: 'Classic',
     width: 12,
     length: 24,
     basePrice: 48000,
@@ -30,13 +30,13 @@ export const DEFAULT_POOL_MODELS: PoolModel[] = [
     features: ['Perfect for small–medium lots', 'Surprisingly useable foot-print', 'Often considered our best \"bang-for-buck\"'],
   },
   {
-    id: 'classic',
-    name: 'Classic',
+    id: 'family',
+    name: 'Family',
     width: 15,
     length: 30,
     basePrice: 62000,
     description: 'The most popular choice. Generous swimming space with a timeless form factor.',
-    features: ['Ideal for most normal-sized backyards', 'Perfect size for all kinds of aquatic games', 'Dimensions allow for a very customizable layout'],
+    features: ['Ideal for most normal-sized backyards', 'The go-to choice for families with kids', 'Dimensions allow for a very customizable layout'],
   },
   {
     id: 'resort',
@@ -53,7 +53,7 @@ export const DEFAULT_POOL_MODELS: PoolModel[] = [
     width: 20,
     length: 40,
     basePrice: 125000,
-    description: 'The pinnacle of residential swimming pools. A piece that defines the property.',
+    description: 'The largest standard residential footprint we offer. A piece that defines the property.',
     features: ['Exceptional scale', 'Full customisation possible', 'Landmark backyard piece'],
   },
 ];

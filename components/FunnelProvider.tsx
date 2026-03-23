@@ -136,6 +136,9 @@ export default function FunnelProvider({
     if (!hydrated) return;
     if (step === prevStep.current) return;
     prevStep.current = step;
+    if (step === 0) {
+      posthog?.capture('funnel_started', { tenant_id: tenantId });
+    }
     posthog?.capture('funnel_step_view', { step, tenant_id: tenantId });
   }, [step, hydrated, tenantId]);
 
