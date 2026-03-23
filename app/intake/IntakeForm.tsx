@@ -386,7 +386,10 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           setPoolModels((prev) => {
             const merged = { ...prev };
             for (const [id, val] of Object.entries(saved.poolModels!)) {
-              if (id in merged) merged[id] = val;
+              if (id in merged) {
+                // Migrate old format (plain string price) to new { price, enabled } shape
+                merged[id] = typeof val === 'string' ? { price: val, enabled: true } : val;
+              }
             }
             return merged;
           });
@@ -404,7 +407,10 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           setDecking((prev) => {
             const merged = { ...prev };
             for (const [id, val] of Object.entries(saved.decking!)) {
-              if (id in merged) merged[id] = val;
+              if (id in merged) {
+                // Migrate old format (plain string price) to new { price, enabled } shape
+                merged[id] = typeof val === 'string' ? { price: val, enabled: true } : val;
+              }
             }
             return merged;
           });
