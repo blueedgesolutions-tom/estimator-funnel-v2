@@ -118,7 +118,7 @@ export default function OptionsStep({ tenant }: Props) {
                       <div className="option-card-desc">{opt.description}</div>
                     )}
                     <div className="option-card-price">
-                      {opt.dynamicPricing ? 'Priced on selection' : `+ ${formatCurrency(opt.price)}`}
+                      {opt.dynamicPricing ? 'Price based on dimensions' : `+ ${formatCurrency(opt.price)}`}
                     </div>
                   </button>
                 );

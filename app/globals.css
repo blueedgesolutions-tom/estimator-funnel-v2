@@ -432,7 +432,7 @@ img {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
   width: 100%;
-  align-items: start;
+  align-items: stretch;
 }
 
 .option-card-grid.cols-3 {
@@ -449,6 +449,8 @@ img {
   transition: all var(--transition-fast);
   text-align: left;
   outline: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .option-card:hover {
@@ -503,7 +505,8 @@ img {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--brand-primary);
-  margin-top: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-sm);
 }
 
 .option-card-dims {
