@@ -86,6 +86,8 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'Energy-efficient heating that extends your swim season by months.',
     category: 'Heating',
     price: 6500,
+    incompatibleWith: ['spa'],
+    incompatibilityNote: 'Heating is included with the Built-in Spa.',
   },
   {
     id: 'gas-heater',
@@ -93,7 +95,8 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'Fast, powerful heating ideal for pools that need rapid temperature changes (e.g. vacation home).',
     category: 'Heating',
     price: 4200,
-    incompatibleWith: ['spa'],  // spa includes its own heater
+    incompatibleWith: ['spa'],
+    incompatibilityNote: 'Heating is included with the Built-in Spa.',
   },
   {
     id: 'solar-heating',
@@ -110,7 +113,7 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'A seamlessly integrated spa/hot tub. Either level or raised. Will instantly level up any backyard pool project.',
     category: 'Features',
     price: 18000,
-    incompatibleWith: ['gas-heater'],
+    incompatibleWith: ['gas-heater', 'heat-pump'],
     materials: ['concrete'],
   },
   {

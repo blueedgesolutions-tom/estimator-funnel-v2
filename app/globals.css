@@ -509,6 +509,15 @@ img {
   padding-top: var(--space-sm);
 }
 
+.option-card-incompat-note {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: auto;
+  padding-top: var(--space-sm);
+  font-style: italic;
+}
+
 .option-card-dims {
   font-size: var(--text-sm);
   color: var(--text-muted);
@@ -2185,7 +2194,7 @@ img {
 .intake-wrapper {
   max-width: 760px;
   margin: 0 auto;
-  padding: var(--space-2xl) var(--space-xl) 120px;
+  padding: var(--space-2xl) var(--space-xl) var(--space-2xl);
 }
 
 /* Hero */
@@ -2630,10 +2639,8 @@ img {
 
 /* Submit bar */
 .intake-submit-bar {
-  position: fixed;
+  position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
   background: var(--canvas-white);
   border-top: 1px solid var(--canvas-border);
   padding: var(--space-md) var(--space-xl);
@@ -2720,7 +2727,7 @@ img {
 /* Intake responsive */
 @media (max-width: 640px) {
   .intake-wrapper {
-    padding: var(--space-xl) var(--space-md) 120px;
+    padding: var(--space-xl) var(--space-md) var(--space-xl);
   }
 
   .intake-submit-bar {

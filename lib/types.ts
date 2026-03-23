@@ -50,7 +50,8 @@ export interface EquipmentOption {
   dynamicPricing?: boolean;
   pricing_formula?: string;
   category?: string;
-  incompatibleWith?: string[];  // option IDs that cannot be selected together
+  incompatibleWith?: string[];      // option IDs that cannot be selected together
+  incompatibilityNote?: string;     // shown on the card when disabled by incompatibility
   materials?: ('concrete' | 'fiberglass')[];  // omit = compatible with all materials
   enabled?: boolean;
 }

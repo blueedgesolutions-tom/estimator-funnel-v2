@@ -110,16 +110,19 @@ export default function OptionsStep({ tenant }: Props) {
                     className={`option-card${isSelected ? ' selected' : ''}${isDisabledByIncompat ? ' disabled' : ''}`}
                     onClick={() => !isDisabledByIncompat && toggleOption(opt.id)}
                     type="button"
-                    style={isDisabledByIncompat ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
-                    title={isDisabledByIncompat ? 'Incompatible with your current selection' : undefined}
+                    style={isDisabledByIncompat ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                   >
                     <div className="option-card-name">{opt.name}</div>
                     {opt.description && (
                       <div className="option-card-desc">{opt.description}</div>
                     )}
-                    <div className="option-card-price">
-                      {opt.dynamicPricing ? 'Price based on dimensions' : `+ ${formatCurrency(opt.price)}`}
-                    </div>
+                    {isDisabledByIncompat && opt.incompatibilityNote ? (
+                      <div className="option-card-incompat-note">{opt.incompatibilityNote}</div>
+                    ) : (
+                      <div className="option-card-price">
+                        {opt.dynamicPricing ? 'Price based on dimensions' : `+ ${formatCurrency(opt.price)}`}
+                      </div>
+                    )}
                   </button>
                 );
               })}

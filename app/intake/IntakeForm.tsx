@@ -587,6 +587,7 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
   if (submitted) return <SuccessScreen brandName={brandName} />;
 
   return (
+    <>
     <div
       className="intake-wrapper"
       onFocusCapture={handleFocusCapture}
@@ -783,29 +784,28 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
         </section>
       )}
 
-      {/* Bottom spacer for sticky bar */}
-      <div style={{ height: 96 }} />
-
-      {/* Sticky submit bar */}
-      <div className={`intake-submit-bar${inputFocused ? ' keyboard-open' : ''}`}>
-        <div className="intake-submit-bar-left">
-          {submitError ? (
-            <div className="intake-submit-error">{submitError}</div>
-          ) : (
-            <div className="intake-submit-hint">
-              All fields save automatically. Submit when you&apos;re ready.
-            </div>
-          )}
-        </div>
-        <button
-          type="button"
-          className="btn-primary intake-submit-btn"
-          onClick={handleSubmit}
-          disabled={submitting}
-        >
-          {submitting ? 'Submitting...' : 'Submit my pricing'}
-        </button>
-      </div>
     </div>
+
+    {/* Sticky submit bar — outside wrapper so it doesn't cover the footer */}
+    <div className={`intake-submit-bar${inputFocused ? ' keyboard-open' : ''}`}>
+      <div className="intake-submit-bar-left">
+        {submitError ? (
+          <div className="intake-submit-error">{submitError}</div>
+        ) : (
+          <div className="intake-submit-hint">
+            All fields save automatically. Submit when you&apos;re ready.
+          </div>
+        )}
+      </div>
+      <button
+        type="button"
+        className="btn-primary intake-submit-btn"
+        onClick={handleSubmit}
+        disabled={submitting}
+      >
+        {submitting ? 'Submitting...' : 'Submit my pricing'}
+      </button>
+    </div>
+    </>
   );
 }
