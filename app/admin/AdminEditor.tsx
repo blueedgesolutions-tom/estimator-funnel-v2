@@ -242,6 +242,11 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   const [deckingEnabled, setDeckingEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(tenant.catalog.deckingOptions.map((d) => [d.id, true]))
   );
+  const [optionDynamic, setOptionDynamic] = useState<Record<string, boolean>>(
+    Object.fromEntries(
+      tenant.catalog.equipmentOptions.map((o) => [o.id, o.dynamicPricing ?? false])
+    )
+  );
   const [optionFormulas, setOptionFormulas] = useState<Record<string, string>>(
     Object.fromEntries(
       tenant.catalog.equipmentOptions
@@ -401,7 +406,7 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
           id: o.id,
           price: parseInt(optionPrices[o.id] ?? String(o.price)) || o.price,
           enabled: optionEnabled[o.id] !== false ? undefined : false,
-          ...(o.dynamicPricing ? { dynamicPricing: true, pricing_formula: optionFormulas[o.id] ?? o.pricing_formula } : {}),
+          ...(optionDynamic[o.id] ? { dynamicPricing: true, pricing_formula: optionFormulas[o.id] ?? '' } : { dynamicPricing: false }),
         })),
         deckingOptions: tenant.catalog.deckingOptions.map((d) => ({
           id: d.id,
@@ -891,19 +896,26 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                       disabled={optionEnabled[opt.id] === false}
                     />
                   </div>
-                  {opt.dynamicPricing && optionEnabled[opt.id] !== false && (
-                    <div style={{ padding: '8px 0 0 0' }}>
-                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 4 }}>
-                        Pricing formula
-                      </div>
-                      <textarea
-                        className="form-input"
-                        rows={2}
-                        value={optionFormulas[opt.id] ?? ''}
-                        onChange={(e) => setOptionFormulas((prev) => ({ ...prev, [opt.id]: e.target.value }))}
-                        placeholder={opt.pricing_formula ?? 'e.g. poolWidth * poolLength * 12'}
-                        style={{ fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }}
-                      />
+                  {optionEnabled[opt.id] !== false && (
+                    <div style={{ padding: '6px 0 0 0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', width: 'fit-content' }}>
+                        <input
+                          type="checkbox"
+                          checked={optionDynamic[opt.id] ?? false}
+                          onChange={(e) => setOptionDynamic((prev) => ({ ...prev, [opt.id]: e.target.checked }))}
+                        />
+                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Dynamic pricing formula</span>
+                      </label>
+                      {optionDynamic[opt.id] && (
+                        <textarea
+                          className="form-input"
+                          rows={2}
+                          value={optionFormulas[opt.id] ?? ''}
+                          onChange={(e) => setOptionFormulas((prev) => ({ ...prev, [opt.id]: e.target.value }))}
+                          placeholder={opt.pricing_formula ?? 'e.g. poolWidth * poolLength * 12'}
+                          style={{ fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }}
+                        />
+                      )}
                     </div>
                   )}
                 </div>
