@@ -213,6 +213,11 @@ export default function FunnelProvider({
         // Non-fatal
       }
 
+      trackConversion('Schedule', 'booking_confirmed', {
+        value: merged.estimatedPrice,
+        currency: 'USD',
+      });
+
       posthog?.capture('booking_confirmed', {
         tenant_id: tenantId,
         booking_date: bookingDate,

@@ -9,8 +9,19 @@ import { useFunnel } from '../FunnelProvider';
 import FaqAccordion from '../FaqAccordion';
 import { resolveCopy, interpolate } from '@/lib/copy';
 import { priceRange, monthlyPayment, formatCurrency, evaluatePricingFormula } from '@/lib/pricing';
+import { posthog } from '@/lib/posthog';
 import type { PricingContext } from '@/lib/types';
 import type { TenantConfig } from '@/lib/types';
+
+const SURVEY_ID = '019d1b8d-1937-0000-3727-9d6e2e8f11b0';
+const SURVEY_QUESTION_ID = '78eb0d23-f462-4e17-b124-fea56f5c64db';
+const SURVEY_CHOICES = [
+  'Suspiciously cheap',
+  'Relatively cheap',
+  'Right on the money',
+  'Expensive, but depends on quality',
+  'Way too much',
+];
 
 interface Props {
   tenant: TenantConfig;
@@ -497,6 +508,34 @@ export default function ResultsStep({ tenant }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Survey banner ──
+  const [surveyVisible, setSurveyVisible] = useState(false);
+  const [surveyAnswer, setSurveyAnswer] = useState<string | null>(null);
+  const [surveySubmitted, setSurveySubmitted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSurveyVisible(true);
+      posthog?.capture('survey shown', { $survey_id: SURVEY_ID });
+    }, 2500);
+    return () => clearTimeout(t);
+  }, []);
+
+  function handleSurveySelect(choice: string) {
+    setSurveyAnswer(choice);
+    posthog?.capture('survey sent', {
+      $survey_id: SURVEY_ID,
+      [`$survey_response_${SURVEY_QUESTION_ID}`]: choice,
+    });
+    setSurveySubmitted(true);
+    setTimeout(() => setSurveyVisible(false), 1500);
+  }
+
+  function handleSurveyDismiss() {
+    posthog?.capture('survey dismissed', { $survey_id: SURVEY_ID });
+    setSurveyVisible(false);
+  }
+
   // ── Display helpers ──
   const firstName = (name ?? '').split(' ')[0] ?? 'there';
   const bookedDateLabel = confirmedDate
@@ -915,6 +954,35 @@ export default function ResultsStep({ tenant }: Props) {
             </div>
           </div>
         </section>
+      )}
+
+      {/* ── Price survey banner ── */}
+      {surveyVisible && (
+        <div className="survey-banner">
+          <div className="survey-banner-header">
+            <span className="survey-banner-eyebrow">Quick question</span>
+            <button className="survey-banner-close" onClick={handleSurveyDismiss} aria-label="Dismiss survey">✕</button>
+          </div>
+          {surveySubmitted ? (
+            <div className="survey-banner-thanks">Thanks for your feedback!</div>
+          ) : (
+            <>
+              <p className="survey-banner-question">What do you think of this estimate?</p>
+              <div className="survey-choices">
+                {SURVEY_CHOICES.map((choice) => (
+                  <button
+                    key={choice}
+                    className="survey-choice"
+                    onClick={() => handleSurveySelect(choice)}
+                    type="button"
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   );
