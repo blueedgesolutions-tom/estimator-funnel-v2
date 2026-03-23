@@ -502,7 +502,7 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
 
   // ── Mobile keyboard detection ──
   const [inputFocused, setInputFocused] = useState(false);
-  const blurTimer = useRef<ReturnType<typeof setTimeout>>();
+  const blurTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const handleFocusCapture = useCallback(() => {
     clearTimeout(blurTimer.current);
     setInputFocused(true);
