@@ -907,14 +907,25 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                         <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Dynamic pricing formula</span>
                       </label>
                       {optionDynamic[opt.id] && (
-                        <textarea
-                          className="form-input"
-                          rows={2}
-                          value={optionFormulas[opt.id] ?? ''}
-                          onChange={(e) => setOptionFormulas((prev) => ({ ...prev, [opt.id]: e.target.value }))}
-                          placeholder={opt.pricing_formula ?? 'e.g. poolWidth * poolLength * 12'}
-                          style={{ fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }}
-                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <textarea
+                            className="form-input"
+                            rows={2}
+                            value={optionFormulas[opt.id] ?? ''}
+                            onChange={(e) => setOptionFormulas((prev) => ({ ...prev, [opt.id]: e.target.value }))}
+                            placeholder={opt.pricing_formula ?? 'e.g. poolWidth * poolLength * 12'}
+                            style={{ fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }}
+                          />
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                            Available variables:{' '}
+                            {['poolWidth', 'poolLength', 'deckingSqft', 'hasSpa', 'selectedOptions', 'Math'].map((v, i, arr) => (
+                              <span key={v}>
+                                <code style={{ fontFamily: 'monospace', background: 'var(--canvas-off-white)', border: '1px solid var(--canvas-border)', borderRadius: 3, padding: '0 3px' }}>{v}</code>
+                                {i < arr.length - 1 ? ' ' : ''}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
