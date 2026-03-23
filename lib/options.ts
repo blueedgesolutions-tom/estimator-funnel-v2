@@ -142,6 +142,13 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     category: 'Features',
     price: 3800,
   },
+  {
+    id: 'screened-enclosure',
+    name: 'Aluminum Screened Enclosure',
+    description: 'Frames the yard nicely and protects against bugs and other creatures entiring pool perimeter.',
+    category: 'Features',
+    price: 25000,
+  },
 
   // Automation
   {

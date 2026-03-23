@@ -15,15 +15,25 @@ interface EquipmentState {
   dynamicPricing: boolean;
 }
 
+interface PoolModelState {
+  price: string;
+  enabled: boolean;
+}
+
+interface DeckingState {
+  price: string;
+  enabled: boolean;
+}
+
 interface FiberglassModelState {
   enabled: boolean;
   price: string;
 }
 
 interface IntakeSaveState {
-  poolModels: Record<string, string>;
+  poolModels: Record<string, PoolModelState>;
   equipment: Record<string, EquipmentState>;
-  decking: Record<string, string>;
+  decking: Record<string, DeckingState>;
   fiberglassModels: Record<string, FiberglassModelState>;
 }
 
@@ -106,34 +116,49 @@ function PriceInput({
 
 function PoolModelCard({
   model,
-  price,
-  onChange,
+  state,
+  onStateChange,
   hasError,
 }: {
   model: PoolModel;
-  price: string;
-  onChange: (v: string) => void;
+  state: PoolModelState;
+  onStateChange: (update: Partial<PoolModelState>) => void;
   hasError: boolean;
 }) {
   return (
-    <div className={`intake-item-card${hasError ? ' has-error' : ''}`}>
+    <div className={`intake-item-card${!state.enabled ? ' is-disabled' : ''}${hasError ? ' has-error' : ''}`}>
       <div className="intake-item-top">
         <div>
           <div className="intake-item-name">{model.name}</div>
           <div className="intake-item-meta">{Math.round(model.width)}′ × {Math.round(model.length)}′</div>
         </div>
+        <label className="intake-toggle-wrap">
+          <div
+            className={`intake-toggle${state.enabled ? ' is-on' : ''}`}
+            onClick={() => onStateChange({ enabled: !state.enabled })}
+            role="switch"
+            aria-checked={state.enabled}
+            tabIndex={0}
+            onKeyDown={(e) => e.key === ' ' && onStateChange({ enabled: !state.enabled })}
+          />
+          <span className="intake-toggle-label">{state.enabled ? 'Offered' : 'Not offered'}</span>
+        </label>
       </div>
       {model.description && (
         <div className="intake-item-desc">{model.description}</div>
       )}
-      <PriceInput
-        label="Starting base price"
-        value={price}
-        onChange={onChange}
-        placeholder="e.g. 62000"
-        hasError={hasError}
-      />
-      {hasError && <div className="intake-field-error">A base price is required for this model.</div>}
+      {state.enabled && (
+        <div className="intake-pricing-area">
+          <PriceInput
+            label="Starting base price"
+            value={state.price}
+            onChange={(v) => onStateChange({ price: v })}
+            placeholder="e.g. 62000"
+            hasError={hasError}
+          />
+          {hasError && <div className="intake-field-error">A base price is required for this model.</div>}
+        </div>
+      )}
     </div>
   );
 }
@@ -220,33 +245,48 @@ function EquipmentCard({
 
 function DeckingCard({
   opt,
-  price,
-  onChange,
+  state,
+  onStateChange,
   hasError,
 }: {
   opt: DeckingOption;
-  price: string;
-  onChange: (v: string) => void;
+  state: DeckingState;
+  onStateChange: (update: Partial<DeckingState>) => void;
   hasError: boolean;
 }) {
   return (
-    <div className={`intake-item-card${hasError ? ' has-error' : ''}`}>
+    <div className={`intake-item-card${!state.enabled ? ' is-disabled' : ''}${hasError ? ' has-error' : ''}`}>
       <div className="intake-item-top">
         <div className="intake-item-name">{opt.name}</div>
+        <label className="intake-toggle-wrap">
+          <div
+            className={`intake-toggle${state.enabled ? ' is-on' : ''}`}
+            onClick={() => onStateChange({ enabled: !state.enabled })}
+            role="switch"
+            aria-checked={state.enabled}
+            tabIndex={0}
+            onKeyDown={(e) => e.key === ' ' && onStateChange({ enabled: !state.enabled })}
+          />
+          <span className="intake-toggle-label">{state.enabled ? 'Offered' : 'Not offered'}</span>
+        </label>
       </div>
       {opt.description && (
         <div className="intake-item-desc">{opt.description}</div>
       )}
-      <PriceInput
-        label="Installed price"
-        value={price}
-        onChange={onChange}
-        placeholder="e.g. 18"
-        unit="/ sq ft"
-        unitPosition="suffix"
-        hasError={hasError}
-      />
-      {hasError && <div className="intake-field-error">A price per sq ft is required.</div>}
+      {state.enabled && (
+        <div className="intake-pricing-area">
+          <PriceInput
+            label="Installed price"
+            value={state.price}
+            onChange={(v) => onStateChange({ price: v })}
+            placeholder="e.g. 18"
+            unit="/ sq ft"
+            unitPosition="suffix"
+            hasError={hasError}
+          />
+          {hasError && <div className="intake-field-error">A price per sq ft is required.</div>}
+        </div>
+      )}
     </div>
   );
 }
@@ -308,8 +348,10 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
   const storageKey = `intake-${tenantId}`;
 
   // ── State init from catalog defaults ──
-  const [poolModels, setPoolModels] = useState<Record<string, string>>(() =>
-    Object.fromEntries(catalog.poolModels.map((m) => [m.id, String(m.basePrice)]))
+  const concreteModels = catalog.poolModels.filter((m) => !m.manufacturer);
+
+  const [poolModels, setPoolModels] = useState<Record<string, PoolModelState>>(() =>
+    Object.fromEntries(concreteModels.map((m) => [m.id, { price: String(m.basePrice), enabled: true }]))
   );
 
   const [equipment, setEquipment] = useState<Record<string, EquipmentState>>(() =>
@@ -321,13 +363,11 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     )
   );
 
-  const [decking, setDecking] = useState<Record<string, string>>(() =>
-    Object.fromEntries(catalog.deckingOptions.map((d) => [d.id, String(d.pricePerSqft)]))
+  const [decking, setDecking] = useState<Record<string, DeckingState>>(() =>
+    Object.fromEntries(catalog.deckingOptions.map((d) => [d.id, { price: String(d.pricePerSqft), enabled: true }]))
   );
 
   const [fiberglassModels, setFiberglassModels] = useState<Record<string, FiberglassModelState>>({});
-  const [selectedManufacturer, setSelectedManufacturer] = useState<string>(MANUFACTURERS[0]?.id ?? '');
-
   const [initialized, setInitialized] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -343,7 +383,13 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
         const saved: Partial<IntakeSaveState> = JSON.parse(raw);
 
         if (saved.poolModels) {
-          setPoolModels((prev) => ({ ...prev, ...saved.poolModels }));
+          setPoolModels((prev) => {
+            const merged = { ...prev };
+            for (const [id, val] of Object.entries(saved.poolModels!)) {
+              if (id in merged) merged[id] = val;
+            }
+            return merged;
+          });
         }
         if (saved.equipment) {
           setEquipment((prev) => {
@@ -355,7 +401,13 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           });
         }
         if (saved.decking) {
-          setDecking((prev) => ({ ...prev, ...saved.decking }));
+          setDecking((prev) => {
+            const merged = { ...prev };
+            for (const [id, val] of Object.entries(saved.decking!)) {
+              if (id in merged) merged[id] = val;
+            }
+            return merged;
+          });
         }
         if (saved.fiberglassModels) {
           setFiberglassModels((prev) => ({ ...prev, ...saved.fiberglassModels }));
@@ -383,13 +435,23 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     setEquipment((prev) => ({ ...prev, [id]: { ...prev[id], ...update } }));
   }
 
+  function updatePoolModel(id: string, update: Partial<PoolModelState>) {
+    setPoolModels((prev) => ({ ...prev, [id]: { ...prev[id], ...update } }));
+  }
+
+  function updateDecking(id: string, update: Partial<DeckingState>) {
+    setDecking((prev) => ({ ...prev, [id]: { ...prev[id], ...update } }));
+  }
+
   // ── Validation ──
   const validate = useCallback((): { errors: string[]; ids: Set<string> } => {
     const errors: string[] = [];
     const ids = new Set<string>();
 
-    for (const model of catalog.poolModels) {
-      const price = parseFloat(poolModels[model.id] ?? '0');
+    for (const model of concreteModels) {
+      const state = poolModels[model.id];
+      if (!state?.enabled) continue;
+      const price = parseFloat(state.price ?? '0');
       if (!price || price <= 0) {
         errors.push(`${model.name} — base price is required.`);
         ids.add(model.id);
@@ -407,7 +469,9 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     }
 
     for (const opt of catalog.deckingOptions) {
-      const price = parseFloat(decking[opt.id] ?? '0');
+      const state = decking[opt.id];
+      if (!state?.enabled) continue;
+      const price = parseFloat(state.price ?? '0');
       if (!price || price <= 0) {
         errors.push(`${opt.name} — price per sq ft is required.`);
         ids.add(opt.id);
@@ -455,9 +519,10 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
       );
 
       const body = {
-        poolModels: catalog.poolModels.map((m) => ({
+        poolModels: concreteModels.map((m) => ({
           id: m.id,
-          basePrice: parseFloat(poolModels[m.id]) || 0,
+          basePrice: parseFloat(poolModels[m.id]?.price ?? '0') || 0,
+          enabled: poolModels[m.id]?.enabled !== false ? undefined : false,
         })),
         equipmentOptions: catalog.equipmentOptions.map((o) => ({
           id: o.id,
@@ -467,7 +532,8 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
         })),
         deckingOptions: catalog.deckingOptions.map((d) => ({
           id: d.id,
-          pricePerSqft: parseFloat(decking[d.id]) || 0,
+          pricePerSqft: parseFloat(decking[d.id]?.price ?? '0') || 0,
+          enabled: decking[d.id]?.enabled !== false ? undefined : false,
         })),
         ...(activeManufacturerModels.length > 0 ? { customPoolModels: activeManufacturerModels } : {}),
       };
@@ -548,12 +614,12 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
           before any add-ons or decking.
         </Callout>
         <div className="intake-items">
-          {catalog.poolModels.map((model) => (
+          {concreteModels.map((model) => (
             <PoolModelCard
               key={model.id}
               model={model}
-              price={poolModels[model.id] ?? ''}
-              onChange={(v) => setPoolModels((prev) => ({ ...prev, [model.id]: v }))}
+              state={poolModels[model.id] ?? { price: '', enabled: true }}
+              onStateChange={(update) => updatePoolModel(model.id, update)}
               hasError={errorIds.has(model.id)}
             />
           ))}
@@ -606,8 +672,8 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
             <DeckingCard
               key={opt.id}
               opt={opt}
-              price={decking[opt.id] ?? ''}
-              onChange={(v) => setDecking((prev) => ({ ...prev, [opt.id]: v }))}
+              state={decking[opt.id] ?? { price: '', enabled: true }}
+              onStateChange={(update) => updateDecking(opt.id, update)}
               hasError={errorIds.has(opt.id)}
             />
           ))}
@@ -627,73 +693,69 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
             installed price for each. Leave this section blank if you only install concrete pools.
           </Callout>
 
-          {/* Manufacturer tabs */}
-          {MANUFACTURERS.length > 1 && (
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-              {MANUFACTURERS.map((mfr) => (
-                <button
-                  key={mfr.id}
-                  type="button"
-                  className={selectedManufacturer === mfr.id ? 'btn-primary' : 'btn-ghost'}
-                  style={{ fontSize: 13, padding: '4px 14px' }}
-                  onClick={() => setSelectedManufacturer(mfr.id)}
-                >
-                  {mfr.name}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Models for selected manufacturer */}
-          {MANUFACTURERS.filter((m) => m.id === selectedManufacturer).map((mfr) => (
-            <div key={mfr.id} className="intake-items">
-              {mfr.models.map((model) => {
-                const state = fiberglassModels[model.id] ?? { enabled: false, price: '' };
-                const hasError = errorIds.has(model.id);
-                return (
-                  <div key={model.id} className={`intake-item-card${!state.enabled ? ' is-disabled' : ''}${hasError ? ' has-error' : ''}`}>
-                    <div className="intake-item-top">
-                      <div>
-                        <div className="intake-item-name">{model.name}</div>
-                        <div className="intake-item-meta">{Math.round(model.width)}′ × {Math.round(model.length)}′ · {mfr.name}</div>
+          {MANUFACTURERS.map((mfr) => (
+            <div key={mfr.id} style={{ marginBottom: 'var(--space-xl)' }}>
+              <div style={{
+                fontSize: 'var(--text-xs)',
+                fontWeight: 600,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.1em',
+                color: 'var(--text-muted)',
+                marginBottom: 'var(--space-sm)',
+                paddingBottom: 'var(--space-xs)',
+                borderBottom: '1px solid var(--canvas-border)',
+              }}>
+                {mfr.name}
+              </div>
+              <div className="intake-items">
+                {mfr.models.map((model) => {
+                  const state = fiberglassModels[model.id] ?? { enabled: false, price: '' };
+                  const hasError = errorIds.has(model.id);
+                  return (
+                    <div key={model.id} className={`intake-item-card${!state.enabled ? ' is-disabled' : ''}${hasError ? ' has-error' : ''}`}>
+                      <div className="intake-item-top">
+                        <div>
+                          <div className="intake-item-name">{model.name}</div>
+                          <div className="intake-item-meta">{Math.round(model.width)}′ × {Math.round(model.length)}′</div>
+                        </div>
+                        <label className="intake-toggle-wrap">
+                          <div
+                            className={`intake-toggle${state.enabled ? ' is-on' : ''}`}
+                            onClick={() => setFiberglassModels((prev) => ({
+                              ...prev,
+                              [model.id]: { ...state, enabled: !state.enabled },
+                            }))}
+                            role="switch"
+                            aria-checked={state.enabled}
+                            tabIndex={0}
+                            onKeyDown={(e) => e.key === ' ' && setFiberglassModels((prev) => ({
+                              ...prev,
+                              [model.id]: { ...state, enabled: !state.enabled },
+                            }))}
+                          />
+                          <span className="intake-toggle-label">{state.enabled ? 'Offered' : 'Not offered'}</span>
+                        </label>
                       </div>
-                      <label className="intake-toggle-wrap">
-                        <div
-                          className={`intake-toggle${state.enabled ? ' is-on' : ''}`}
-                          onClick={() => setFiberglassModels((prev) => ({
-                            ...prev,
-                            [model.id]: { ...state, enabled: !state.enabled },
-                          }))}
-                          role="switch"
-                          aria-checked={state.enabled}
-                          tabIndex={0}
-                          onKeyDown={(e) => e.key === ' ' && setFiberglassModels((prev) => ({
-                            ...prev,
-                            [model.id]: { ...state, enabled: !state.enabled },
-                          }))}
-                        />
-                        <span className="intake-toggle-label">{state.enabled ? 'Offered' : 'Not offered'}</span>
-                      </label>
+
+                      {state.enabled && (
+                        <div className="intake-pricing-area">
+                          <PriceInput
+                            label="Your installed price"
+                            value={state.price}
+                            onChange={(v) => setFiberglassModels((prev) => ({
+                              ...prev,
+                              [model.id]: { ...state, price: v },
+                            }))}
+                            placeholder="e.g. 45000"
+                            hasError={hasError}
+                          />
+                          {hasError && <div className="intake-field-error">A base price is required for this model.</div>}
+                        </div>
+                      )}
                     </div>
-
-                    {state.enabled && (
-                      <div className="intake-pricing-area">
-                        <PriceInput
-                          label="Your installed price"
-                          value={state.price}
-                          onChange={(v) => setFiberglassModels((prev) => ({
-                            ...prev,
-                            [model.id]: { ...state, price: v },
-                          }))}
-                          placeholder="e.g. 45000"
-                          hasError={hasError}
-                        />
-                        {hasError && <div className="intake-field-error">A price is required for this model.</div>}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           ))}
         </section>

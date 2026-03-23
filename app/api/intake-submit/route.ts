@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       const resend = new Resend(resendKey);
 
       await resend.emails.send({
-        from: 'Blue Edge Solutions <noreply@blueedgesolutions.co>',
+        from: 'Blue Edge Solutions <intake@pooldesignrequest.com>',
         to: ['thomas@blueedgesolutions.co'],
         subject: `New pricing intake — ${brand_name} (${tenantId})`,
         html: buildNotificationEmail(brand_name, tenantId, timestampedBlob.url),

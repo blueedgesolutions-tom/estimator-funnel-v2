@@ -55,9 +55,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Internal notification email
+  // Internal notification email — disabled (CRM handles this via GHL automation)
   const resendKey = process.env.RESEND_API_KEY;
-  if (resendKey && contact_email) {
+  if (true && resendKey && contact_email) {
     try {
       const { Resend } = await import('resend');
       const resend = new Resend(resendKey);

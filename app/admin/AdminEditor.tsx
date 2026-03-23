@@ -236,6 +236,19 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
       tenant.catalog.deckingOptions.map((d) => [d.id, String(d.pricePerSqft)])
     )
   );
+  const [poolModelEnabled, setPoolModelEnabled] = useState<Record<string, boolean>>(
+    Object.fromEntries(tenant.catalog.poolModels.map((m) => [m.id, true]))
+  );
+  const [deckingEnabled, setDeckingEnabled] = useState<Record<string, boolean>>(
+    Object.fromEntries(tenant.catalog.deckingOptions.map((d) => [d.id, true]))
+  );
+  const [optionFormulas, setOptionFormulas] = useState<Record<string, string>>(
+    Object.fromEntries(
+      tenant.catalog.equipmentOptions
+        .filter((o) => o.dynamicPricing && o.pricing_formula)
+        .map((o) => [o.id, o.pricing_formula ?? ''])
+    )
+  );
 
   // ── Intake import ──
   const [importStatus, setImportStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -252,12 +265,19 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
       const data = await res.json();
       const { catalog } = data;
 
-      // Apply pool model prices
+      // Apply pool model prices and enabled state
       if (catalog.poolModels) {
         setPoolModelPrices((prev) => {
           const next = { ...prev };
           for (const m of catalog.poolModels) {
             if (m.id in next) next[m.id] = String(m.basePrice);
+          }
+          return next;
+        });
+        setPoolModelEnabled((prev) => {
+          const next = { ...prev };
+          for (const m of catalog.poolModels) {
+            if (m.id in next) next[m.id] = m.enabled !== false;
           }
           return next;
         });
@@ -281,12 +301,19 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         });
       }
 
-      // Apply decking prices
+      // Apply decking prices and enabled state
       if (catalog.deckingOptions) {
         setDeckingPrices((prev) => {
           const next = { ...prev };
           for (const d of catalog.deckingOptions) {
             if (d.id in next) next[d.id] = String(d.pricePerSqft);
+          }
+          return next;
+        });
+        setDeckingEnabled((prev) => {
+          const next = { ...prev };
+          for (const d of catalog.deckingOptions) {
+            if (d.id in next) next[d.id] = d.enabled !== false;
           }
           return next;
         });
@@ -359,6 +386,7 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
           .map((m) => ({
             id: m.id,
             basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
+            enabled: poolModelEnabled[m.id] !== false ? undefined : false,
           })),
         customPoolModels: tenant.catalog.poolModels.some((m) => !!m.manufacturer)
           ? tenant.catalog.poolModels
@@ -366,17 +394,19 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
               .map((m) => ({
                 ...m,
                 basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
+                enabled: poolModelEnabled[m.id] !== false ? undefined : false,
               }))
           : undefined,
         equipmentOptions: tenant.catalog.equipmentOptions.map((o) => ({
           id: o.id,
           price: parseInt(optionPrices[o.id] ?? String(o.price)) || o.price,
           enabled: optionEnabled[o.id] !== false ? undefined : false,
-          ...(o.dynamicPricing ? { dynamicPricing: true, pricing_formula: o.pricing_formula } : {}),
+          ...(o.dynamicPricing ? { dynamicPricing: true, pricing_formula: optionFormulas[o.id] ?? o.pricing_formula } : {}),
         })),
         deckingOptions: tenant.catalog.deckingOptions.map((d) => ({
           id: d.id,
           pricePerSqft: parseFloat(deckingPrices[d.id] ?? String(d.pricePerSqft)) || d.pricePerSqft,
+          enabled: deckingEnabled[d.id] !== false ? undefined : false,
         })),
       },
       estimate: {
@@ -768,12 +798,23 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                     <div className="admin-catalog-name">{model.name}</div>
                     <div className="admin-catalog-sub">{Math.round(model.width)}′ × {Math.round(model.length)}′</div>
                   </div>
+                  <label className="admin-toggle" style={{ gap: 6 }}>
+                    <input
+                      type="checkbox"
+                      checked={poolModelEnabled[model.id] !== false}
+                      onChange={(e) => setPoolModelEnabled((prev) => ({ ...prev, [model.id]: e.target.checked }))}
+                    />
+                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                      {poolModelEnabled[model.id] !== false ? 'On' : 'Off'}
+                    </span>
+                  </label>
                   <input
                     type="number"
                     className="admin-price-input"
-                    value={poolModelPrices[model.id] ?? ''}
+                    value={poolModelEnabled[model.id] !== false ? (poolModelPrices[model.id] ?? '') : ''}
                     onChange={(e) => setPoolModelPrices((prev) => ({ ...prev, [model.id]: e.target.value }))}
                     placeholder={String(model.basePrice)}
+                    disabled={poolModelEnabled[model.id] === false}
                   />
                 </div>
               ))}
@@ -788,12 +829,23 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                         <div className="admin-catalog-name">{model.name}</div>
                         <div className="admin-catalog-sub">{Math.round(model.width)}′ × {Math.round(model.length)}′ · {model.manufacturer}</div>
                       </div>
+                      <label className="admin-toggle" style={{ gap: 6 }}>
+                        <input
+                          type="checkbox"
+                          checked={poolModelEnabled[model.id] !== false}
+                          onChange={(e) => setPoolModelEnabled((prev) => ({ ...prev, [model.id]: e.target.checked }))}
+                        />
+                        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                          {poolModelEnabled[model.id] !== false ? 'On' : 'Off'}
+                        </span>
+                      </label>
                       <input
                         type="number"
                         className="admin-price-input"
-                        value={poolModelPrices[model.id] ?? ''}
+                        value={poolModelEnabled[model.id] !== false ? (poolModelPrices[model.id] ?? '') : ''}
                         onChange={(e) => setPoolModelPrices((prev) => ({ ...prev, [model.id]: e.target.value }))}
                         placeholder={String(model.basePrice)}
+                        disabled={poolModelEnabled[model.id] === false}
                       />
                     </div>
                   ))}
@@ -807,36 +859,53 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                 Equipment options — price ($) · toggle to enable/disable
               </div>
               {tenant.catalog.equipmentOptions.map((opt) => (
-                <div key={opt.id} className="admin-catalog-row">
-                  <div>
-                    <div className="admin-catalog-name">{opt.name}</div>
-                    <div className="admin-catalog-sub">
-                      {opt.category}
-                      {opt.materials && (
-                        <span style={{ marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--canvas-off-white)', border: '1px solid var(--canvas-border)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                          {opt.materials.join(' + ')} only
-                        </span>
-                      )}
+                <div key={opt.id} style={{ marginBottom: 'var(--space-sm)' }}>
+                  <div className="admin-catalog-row">
+                    <div>
+                      <div className="admin-catalog-name">{opt.name}</div>
+                      <div className="admin-catalog-sub">
+                        {opt.category}
+                        {opt.materials && (
+                          <span style={{ marginLeft: 6, padding: '1px 6px', borderRadius: 4, background: 'var(--canvas-off-white)', border: '1px solid var(--canvas-border)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                            {opt.materials.join(' + ')} only
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <label className="admin-toggle" style={{ gap: 6 }}>
+                    <label className="admin-toggle" style={{ gap: 6 }}>
+                      <input
+                        type="checkbox"
+                        checked={optionEnabled[opt.id] !== false}
+                        onChange={(e) => setOptionEnabled((prev) => ({ ...prev, [opt.id]: e.target.checked }))}
+                      />
+                      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                        {optionEnabled[opt.id] !== false ? 'On' : 'Off'}
+                      </span>
+                    </label>
                     <input
-                      type="checkbox"
-                      checked={optionEnabled[opt.id] !== false}
-                      onChange={(e) => setOptionEnabled((prev) => ({ ...prev, [opt.id]: e.target.checked }))}
+                      type="number"
+                      className="admin-price-input"
+                      value={optionEnabled[opt.id] !== false ? (optionPrices[opt.id] ?? '') : ''}
+                      onChange={(e) => setOptionPrices((prev) => ({ ...prev, [opt.id]: e.target.value }))}
+                      placeholder={String(opt.price)}
+                      disabled={optionEnabled[opt.id] === false}
                     />
-                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                      {optionEnabled[opt.id] !== false ? 'On' : 'Off'}
-                    </span>
-                  </label>
-                  <input
-                    type="number"
-                    className="admin-price-input"
-                    value={optionEnabled[opt.id] !== false ? (optionPrices[opt.id] ?? '') : ''}
-                    onChange={(e) => setOptionPrices((prev) => ({ ...prev, [opt.id]: e.target.value }))}
-                    placeholder={String(opt.price)}
-                    disabled={optionEnabled[opt.id] === false}
-                  />
+                  </div>
+                  {opt.dynamicPricing && optionEnabled[opt.id] !== false && (
+                    <div style={{ padding: '8px 0 0 0' }}>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 4 }}>
+                        Pricing formula
+                      </div>
+                      <textarea
+                        className="form-input"
+                        rows={2}
+                        value={optionFormulas[opt.id] ?? ''}
+                        onChange={(e) => setOptionFormulas((prev) => ({ ...prev, [opt.id]: e.target.value }))}
+                        placeholder={opt.pricing_formula ?? 'e.g. poolWidth * poolLength * 12'}
+                        style={{ fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }}
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -851,13 +920,23 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                   <div>
                     <div className="admin-catalog-name">{opt.name}</div>
                   </div>
-                  <div />
+                  <label className="admin-toggle" style={{ gap: 6 }}>
+                    <input
+                      type="checkbox"
+                      checked={deckingEnabled[opt.id] !== false}
+                      onChange={(e) => setDeckingEnabled((prev) => ({ ...prev, [opt.id]: e.target.checked }))}
+                    />
+                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                      {deckingEnabled[opt.id] !== false ? 'On' : 'Off'}
+                    </span>
+                  </label>
                   <input
                     type="number"
                     className="admin-price-input"
-                    value={deckingPrices[opt.id] ?? ''}
+                    value={deckingEnabled[opt.id] !== false ? (deckingPrices[opt.id] ?? '') : ''}
                     onChange={(e) => setDeckingPrices((prev) => ({ ...prev, [opt.id]: e.target.value }))}
                     placeholder={String(opt.pricePerSqft)}
+                    disabled={deckingEnabled[opt.id] === false}
                   />
                 </div>
               ))}
