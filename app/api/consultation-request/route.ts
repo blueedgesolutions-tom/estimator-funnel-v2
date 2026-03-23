@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTenant, getTenantId } from '@/lib/tenant';
+import { getTenant } from '@/lib/tenant';
 import { formatCurrency } from '@/lib/pricing';
 import type { ConsultationRequestPayload } from '@/lib/types';
 
@@ -27,9 +27,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
   }
 
-  const [tenant, tenantId] = await Promise.all([getTenant(), getTenantId()]);
-  const { ghl_booking_webhook_url, contact_email, brand_name, resend_from } =
-    tenant.config;
+  const tenant = await getTenant();
+  const { ghl_booking_webhook_url, brand_name } = tenant.config;
 
   if (ghl_booking_webhook_url) {
     const body = {
@@ -57,15 +56,14 @@ export async function POST(req: NextRequest) {
 
   // Internal notification email — disabled (CRM handles this via GHL automation)
   const resendKey = process.env.RESEND_API_KEY;
-  if (true && resendKey && contact_email) {
+  if (resendKey) {
     try {
       const { Resend } = await import('resend');
       const resend = new Resend(resendKey);
-      const fromAddress = resend_from ?? `${brand_name} <${tenantId}@pooldesignrequest.com>`;
 
       await resend.emails.send({
-        from: fromAddress,
-        to: [contact_email],
+        from: 'notifications@pooldesignrequest.com',
+        to: ['thomas@blueedgesolutions.co'],
         subject: `Consultation request — ${name} · ${date}`,
         html: `
           <h2 style="font-family:sans-serif;margin:0 0 16px">New consultation request</h2>

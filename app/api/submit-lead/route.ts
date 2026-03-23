@@ -77,9 +77,9 @@ export async function POST(req: NextRequest) {
 
   // ── 2. Confirmation email via Resend ──
   const resendKey = process.env.RESEND_API_KEY;
-  const fromAddress = resend_from ?? `${brand_name} <${tenantId}@pooldesignrequest.com>`;
+  const fromAddress = 'notifications@pooldesignrequest.com';
 
-  if (resendKey && contact_email) {
+  if (resendKey) {
     try {
       const { Resend } = await import('resend');
       const resend = new Resend(resendKey);
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       // Internal lead notification to the company
       await resend.emails.send({
         from: fromAddress,
-        to: [contact_email],
+        to: ['thomas@blueedgesolutions.co'],
         subject: `New pool estimate lead — ${funnelData.name}`,
         html: buildLeadEmail(funnelData, brand_name),
       });

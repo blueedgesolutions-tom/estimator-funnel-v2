@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CheckCircle, AlertCircle, Info, Zap, ChevronDown, ChevronUp } from 'lucide-react';
 import type { TenantCatalog, PoolModel, EquipmentOption, DeckingOption } from '@/lib/types';
 import { MANUFACTURERS } from '@/lib/manufacturers/index';
@@ -95,6 +95,7 @@ function PriceInput({
         {unitPosition === 'prefix' && <span className="intake-price-unit intake-price-unit--prefix">{unit}</span>}
         <input
           type="number"
+          inputMode="decimal"
           min="0"
           step="any"
           className={`intake-price-input${unitPosition === 'prefix' ? ' has-prefix' : ''}${unitPosition === 'suffix' ? ' has-suffix' : ''}${hasError ? ' has-error' : ''}`}
@@ -499,6 +500,17 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
     return { errors, ids };
   }, [catalog, poolModels, equipment, decking, fiberglassModels]);
 
+  // ── Mobile keyboard detection ──
+  const [inputFocused, setInputFocused] = useState(false);
+  const blurTimer = useRef<ReturnType<typeof setTimeout>>();
+  const handleFocusCapture = useCallback(() => {
+    clearTimeout(blurTimer.current);
+    setInputFocused(true);
+  }, []);
+  const handleBlurCapture = useCallback(() => {
+    blurTimer.current = setTimeout(() => setInputFocused(false), 150);
+  }, []);
+
   // ── Submit ──
   async function handleSubmit() {
     const { errors, ids } = validate();
@@ -575,7 +587,11 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
   if (submitted) return <SuccessScreen brandName={brandName} />;
 
   return (
-    <div className="intake-wrapper">
+    <div
+      className="intake-wrapper"
+      onFocusCapture={handleFocusCapture}
+      onBlurCapture={handleBlurCapture}
+    >
 
       {/* Validation error banner */}
       {validationErrors.length > 0 && (
@@ -771,7 +787,7 @@ export default function IntakeForm({ tenantId, brandName, catalog }: Props) {
       <div style={{ height: 96 }} />
 
       {/* Sticky submit bar */}
-      <div className="intake-submit-bar">
+      <div className={`intake-submit-bar${inputFocused ? ' keyboard-open' : ''}`}>
         <div className="intake-submit-bar-left">
           {submitError ? (
             <div className="intake-submit-error">{submitError}</div>

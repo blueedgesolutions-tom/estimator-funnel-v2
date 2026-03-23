@@ -2724,6 +2724,14 @@ img {
     padding: var(--space-md);
     flex-direction: column;
     align-items: stretch;
+    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .intake-submit-bar.keyboard-open {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
   }
 
   .intake-submit-btn {
