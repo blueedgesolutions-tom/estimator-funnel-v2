@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from 'react';
 import { Check, Copy, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { resolveTheme } from '@/lib/theme';
 import { DEFAULT_COPY_TEMPLATES } from '@/lib/copy';
-import type { TenantConfig, RawTenantConfig, TenantCopy } from '@/lib/types';
+import type { TenantConfig, RawTenantConfig, TenantCopy, PoolModel } from '@/lib/types';
 import AssetUploader from './AssetUploader';
 
 interface Props {
@@ -241,6 +241,10 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   const [poolModelEnabled, setPoolModelEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(tenant.catalog.poolModels.map((m) => [m.id, m.enabled !== false]))
   );
+  // Fiberglass (custom) models — state-driven so import can add new ones
+  const [customModels, setCustomModels] = useState<PoolModel[]>(
+    tenant.catalog.poolModels.filter((m) => !!m.manufacturer)
+  );
   const [deckingEnabled, setDeckingEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(tenant.catalog.deckingOptions.map((d) => [d.id, d.enabled !== false]))
   );
@@ -290,19 +294,20 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         });
       }
 
-      // Apply fiberglass (custom) model prices and enabled state
-      if (catalog.customPoolModels) {
+      // Apply fiberglass (custom) model prices, enabled state, and model list
+      if (catalog.customPoolModels && catalog.customPoolModels.length > 0) {
+        setCustomModels(catalog.customPoolModels as PoolModel[]);
         setPoolModelPrices((prev) => {
           const next = { ...prev };
           for (const m of catalog.customPoolModels) {
-            if (m.id in next) next[m.id] = String(m.basePrice);
+            next[m.id] = String(m.basePrice);
           }
           return next;
         });
         setPoolModelEnabled((prev) => {
           const next = { ...prev };
           for (const m of catalog.customPoolModels) {
-            if (m.id in next) next[m.id] = m.enabled !== false;
+            next[m.id] = m.enabled !== false;
           }
           return next;
         });
@@ -415,14 +420,12 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
             basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
             enabled: poolModelEnabled[m.id] !== false ? undefined : false,
           })),
-        customPoolModels: tenant.catalog.poolModels.some((m) => !!m.manufacturer)
-          ? tenant.catalog.poolModels
-              .filter((m) => !!m.manufacturer)
-              .map((m) => ({
-                ...m,
-                basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
-                enabled: poolModelEnabled[m.id] !== false ? undefined : false,
-              }))
+        customPoolModels: customModels.length > 0
+          ? customModels.map((m) => ({
+              ...m,
+              basePrice: parseInt(poolModelPrices[m.id] ?? String(m.basePrice)) || m.basePrice,
+              enabled: poolModelEnabled[m.id] !== false ? undefined : false,
+            }))
           : undefined,
         equipmentOptions: tenant.catalog.equipmentOptions.map((o) => ({
           id: o.id,
@@ -850,12 +853,12 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                   />
                 </div>
               ))}
-              {tenant.catalog.poolModels.some((m) => !!m.manufacturer) && (
+              {customModels.length > 0 && (
                 <>
                   <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: 'var(--space-md) 0 var(--space-sm)' }}>
                     Fiberglass models — base price ($)
                   </div>
-                  {tenant.catalog.poolModels.filter((m) => !!m.manufacturer).map((model) => (
+                  {customModels.map((model) => (
                     <div key={model.id} className="admin-catalog-row">
                       <div>
                         <div className="admin-catalog-name">{model.name}</div>
