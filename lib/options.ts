@@ -86,8 +86,6 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'Energy-efficient heating that extends your swim season by months.',
     category: 'Heating',
     price: 6500,
-    incompatibleWith: ['spa'],
-    incompatibilityNote: 'Heating is included with the Built-in Spa.',
   },
   {
     id: 'gas-heater',
@@ -95,8 +93,6 @@ export const DEFAULT_EQUIPMENT_OPTIONS: EquipmentOption[] = [
     description: 'Fast, powerful heating ideal for pools that need rapid temperature changes (e.g. vacation home).',
     category: 'Heating',
     price: 4200,
-    incompatibleWith: ['spa'],
-    incompatibilityNote: 'Heating is included with the Built-in Spa.',
   },
   {
     id: 'solar-heating',

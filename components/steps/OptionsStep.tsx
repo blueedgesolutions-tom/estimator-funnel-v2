@@ -62,7 +62,7 @@ export default function OptionsStep({ tenant }: Props) {
     // Enforce spa/heater incompatibility on save
     const hasSpa = selected.includes('spa');
     const finalOptions = hasSpa
-      ? selected.filter((id) => id !== 'gas-heater')
+      ? selected.filter((id) => id !== 'gas-heater' && id !== 'heat-pump')
       : selected;
 
     updateFunnelData({ options: finalOptions });
