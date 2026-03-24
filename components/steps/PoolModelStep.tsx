@@ -242,16 +242,17 @@ export default function PoolModelStep({ tenant }: Props) {
   const { catalog } = tenant;
 
   // ── Material switcher ──
-  const hasFiberglass = catalog.poolModels.some((m) => m.material === 'fiberglass');
+  const hasFiberglass = catalog.poolModels.some((m) => m.material === 'fiberglass' && m.enabled !== false);
   const [selectedMaterial, setSelectedMaterial] = useState<'concrete' | 'fiberglass'>(() => {
     if (!hasFiberglass) return 'concrete';
     const existing = catalog.poolModels.find((m) => m.id === funnelData.poolModel);
     return existing?.material === 'fiberglass' ? 'fiberglass' : 'concrete';
   });
 
-  const visibleModels = hasFiberglass
+  const visibleModels = (hasFiberglass
     ? catalog.poolModels.filter((m) => (m.material ?? 'concrete') === selectedMaterial)
-    : catalog.poolModels;
+    : catalog.poolModels
+  ).filter((m) => m.enabled !== false);
 
   const [selectedModel, setSelectedModel] = useState(funnelData.poolModel ?? '');
   const [openPhotoId, setOpenPhotoId] = useState<string | null>(null);
@@ -410,7 +411,7 @@ export default function PoolModelStep({ tenant }: Props) {
                 <div className="option-card-name">No decking</div>
                 <div className="option-card-desc">Skip decking for now — we can quote it separately.</div>
               </button>
-              {catalog.deckingOptions.map((opt) => (
+              {catalog.deckingOptions.filter((opt) => opt.enabled !== false).map((opt) => (
                 <button
                   key={opt.id}
                   className={`option-card${selectedDecking === opt.id ? ' selected' : ''}`}

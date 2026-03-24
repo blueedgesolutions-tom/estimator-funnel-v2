@@ -230,7 +230,7 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   );
   const [optionEnabled, setOptionEnabled] = useState<Record<string, boolean>>(
     Object.fromEntries(
-      tenant.catalog.equipmentOptions.map((o) => [o.id, true])
+      tenant.catalog.equipmentOptions.map((o) => [o.id, o.enabled !== false])
     )
   );
   const [deckingPrices, setDeckingPrices] = useState<Record<string, string>>(
@@ -239,10 +239,10 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
     )
   );
   const [poolModelEnabled, setPoolModelEnabled] = useState<Record<string, boolean>>(
-    Object.fromEntries(tenant.catalog.poolModels.map((m) => [m.id, true]))
+    Object.fromEntries(tenant.catalog.poolModels.map((m) => [m.id, m.enabled !== false]))
   );
   const [deckingEnabled, setDeckingEnabled] = useState<Record<string, boolean>>(
-    Object.fromEntries(tenant.catalog.deckingOptions.map((d) => [d.id, true]))
+    Object.fromEntries(tenant.catalog.deckingOptions.map((d) => [d.id, d.enabled !== false]))
   );
   const [optionDynamic, setOptionDynamic] = useState<Record<string, boolean>>(
     Object.fromEntries(
@@ -284,6 +284,24 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         setPoolModelEnabled((prev) => {
           const next = { ...prev };
           for (const m of catalog.poolModels) {
+            if (m.id in next) next[m.id] = m.enabled !== false;
+          }
+          return next;
+        });
+      }
+
+      // Apply fiberglass (custom) model prices and enabled state
+      if (catalog.customPoolModels) {
+        setPoolModelPrices((prev) => {
+          const next = { ...prev };
+          for (const m of catalog.customPoolModels) {
+            if (m.id in next) next[m.id] = String(m.basePrice);
+          }
+          return next;
+        });
+        setPoolModelEnabled((prev) => {
+          const next = { ...prev };
+          for (const m of catalog.customPoolModels) {
             if (m.id in next) next[m.id] = m.enabled !== false;
           }
           return next;

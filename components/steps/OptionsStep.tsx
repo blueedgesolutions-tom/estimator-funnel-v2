@@ -26,7 +26,7 @@ export default function OptionsStep({ tenant }: Props) {
 
   const compatibleOptions = useMemo(
     () => catalog.equipmentOptions.filter(
-      (o) => !o.materials || o.materials.includes(selectedMaterial)
+      (o) => o.enabled !== false && (!o.materials || o.materials.includes(selectedMaterial))
     ),
     [catalog.equipmentOptions, selectedMaterial]
   );

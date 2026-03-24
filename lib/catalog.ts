@@ -18,24 +18,22 @@ import {
 export function resolveCatalog(
   raw: RawTenantConfig['catalog']
 ): TenantCatalog {
-  // Pool models
+  // Pool models — disabled items are kept with enabled: false so the admin
+  // can see and manage them; funnel steps filter them out at render time.
   const poolModels = DEFAULT_POOL_MODELS
     .map((def) => {
       const override = raw.poolModels.find((r) => r.id === def.id);
-      if (override?.enabled === false) return null;
       return {
         ...def,
         ...(override ?? {}),
-        enabled: undefined,  // strip internal flag from output
+        enabled: override?.enabled === false ? false : undefined,
       };
-    })
-    .filter(Boolean) as TenantCatalog['poolModels'];
+    }) as TenantCatalog['poolModels'];
 
   // Equipment options
   const equipmentOptions = DEFAULT_EQUIPMENT_OPTIONS
     .map((def) => {
       const override = raw.equipmentOptions.find((r) => r.id === def.id);
-      if (override?.enabled === false) return null;
       return {
         ...def,
         ...(override ? {
@@ -43,21 +41,20 @@ export function resolveCatalog(
           dynamicPricing: override.dynamicPricing ?? def.dynamicPricing,
           pricing_formula: override.pricing_formula ?? def.pricing_formula,
         } : {}),
+        enabled: override?.enabled === false ? false : undefined,
       };
-    })
-    .filter(Boolean) as TenantCatalog['equipmentOptions'];
+    }) as TenantCatalog['equipmentOptions'];
 
   // Decking options
   const deckingOptions = DEFAULT_DECKING_OPTIONS
     .map((def) => {
       const override = raw.deckingOptions.find((r) => r.id === def.id);
-      if (override?.enabled === false) return null;
       return {
         ...def,
         pricePerSqft: override?.pricePerSqft ?? def.pricePerSqft,
+        enabled: override?.enabled === false ? false : undefined,
       };
-    })
-    .filter(Boolean) as TenantCatalog['deckingOptions'];
+    }) as TenantCatalog['deckingOptions'];
 
   return {
     poolModels: [...poolModels, ...(raw.customPoolModels ?? [])],
