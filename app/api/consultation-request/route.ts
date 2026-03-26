@@ -31,14 +31,18 @@ export async function POST(req: NextRequest) {
   const { ghl_booking_webhook_url, brand_name } = tenant.config;
 
   if (ghl_booking_webhook_url) {
+    const dayName = new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long' });
+    const timeOfDay = timeSlot === 'morning' ? 'the morning' : 'the afternoon';
+
     const body = {
-      full_name:    name,
+      full_name:             name,
       phone,
-      booking_date: date,
-      booking_time: timeSlot,
-      estimated_price: String(estimatedPrice),
-      source:       `${brand_name} Results Page`,
-      note:         `Consultation request following instant estimate for ${date} ${TIME_LABELS[timeSlot]}`,
+      booking_date:          date,
+      booking_time:          timeSlot,
+      formatted_appointment: `${dayName} in ${timeOfDay}`,
+      estimated_price:       String(estimatedPrice),
+      source:                `${brand_name} Results Page`,
+      note:                  `Consultation request following instant estimate for ${date} ${TIME_LABELS[timeSlot]}`,
     };
 
     try {
