@@ -143,9 +143,10 @@ interface ModelCardProps {
   isOpen: boolean;
   onSelect: (model: PoolModel) => void;
   onTogglePhoto: (id: string) => void;
+  hidePrices?: boolean;
 }
 
-function ModelCard({ model, isSelected, isOpen, onSelect, onTogglePhoto }: ModelCardProps) {
+function ModelCard({ model, isSelected, isOpen, onSelect, onTogglePhoto, hidePrices }: ModelCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -180,9 +181,11 @@ function ModelCard({ model, isSelected, isOpen, onSelect, onTogglePhoto }: Model
           <div className="option-card-desc">{model.description}</div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'var(--space-sm)', gap: 'var(--space-sm)' }}>
-          <div className="option-card-price" style={{ margin: 0 }}>
-            {formatCurrency(model.basePrice)}
-          </div>
+          {!hidePrices && (
+            <div className="option-card-price" style={{ margin: 0 }}>
+              {formatCurrency(model.basePrice)}
+            </div>
+          )}
           {hasPhotos && (
             <button
               type="button"
@@ -384,6 +387,7 @@ export default function PoolModelStep({ tenant }: Props) {
               isOpen={openPhotoId === model.id}
               onSelect={handleModelSelect}
               onTogglePhoto={(id) => setOpenPhotoId((prev) => prev === id ? null : id)}
+              hidePrices={tenant.config.hide_prices}
             />
           ))}
         </div>
@@ -422,9 +426,11 @@ export default function PoolModelStep({ tenant }: Props) {
                   {opt.description && (
                     <div className="option-card-desc">{opt.description}</div>
                   )}
-                  <div className="option-card-price">
-                    {formatCurrency(opt.pricePerSqft)}/sqft
-                  </div>
+                  {!tenant.config.hide_prices && (
+                    <div className="option-card-price">
+                      {formatCurrency(opt.pricePerSqft)}/sqft
+                    </div>
+                  )}
                 </button>
               ))}
             </div>

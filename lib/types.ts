@@ -160,6 +160,7 @@ export interface TenantConfigData {
   testimonials?: Testimonial[];
   faqs?: FaqItem[];
   contactFields?: ContactFieldDef[];
+  hide_prices?: boolean;            // When true, hides per-item prices in selection steps; revealed only at results
 }
 
 // ─────────────────────────────────────────────────────────

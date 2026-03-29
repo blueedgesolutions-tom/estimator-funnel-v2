@@ -202,6 +202,9 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
   }
   const [blockedCounties, setBlockedCounties] = useState((sa.blockedCounties ?? []).join(', '));
 
+  // ── Display ──
+  const [hidePrices, setHidePrices] = useState(cfg.hide_prices ?? false);
+
   // ── Booking ──
   const [bookingEnabled, setBookingEnabled] = useState(est.bookingEnabled);
   const [bookingSkipEnabled, setBookingSkipEnabled] = useState(est.bookingSkipEnabled ?? true);
@@ -405,6 +408,7 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
         resend_from:           resendFrom.trim() || undefined,
         state_license:         stateLicense.trim() || undefined,
         financing_url:         financingUrl.trim() || undefined,
+        hide_prices:           hidePrices || undefined,
         theme: {
           primary: primaryColor,
         },
@@ -723,6 +727,12 @@ export default function AdminEditor({ tenant, tenantId }: Props) {
                 placeholder="Travis County, Williamson County" hint="Comma-separated" />
             </div>
           )}
+        </SectionCard>
+
+        {/* Display */}
+        <SectionCard title="Display">
+          <Toggle label="Hide prices during selection" checked={hidePrices} onChange={setHidePrices}
+            hint="Hides per-item prices on pool, decking, and options cards. Price is only revealed at the results step." />
         </SectionCard>
 
         {/* Booking */}

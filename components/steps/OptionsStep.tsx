@@ -118,11 +118,11 @@ export default function OptionsStep({ tenant }: Props) {
                     )}
                     {isDisabledByIncompat && opt.incompatibilityNote ? (
                       <div className="option-card-incompat-note">{opt.incompatibilityNote}</div>
-                    ) : (
+                    ) : !tenant.config.hide_prices ? (
                       <div className="option-card-price">
                         {opt.dynamicPricing ? 'Price based on dimensions' : `+ ${formatCurrency(opt.price)}`}
                       </div>
-                    )}
+                    ) : null}
                   </button>
                 );
               })}
